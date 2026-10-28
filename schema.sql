@@ -15,3 +15,5 @@ CREATE TABLE IF NOT EXISTS sessions (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS sessions_expires_at_idx ON sessions(expires_at);
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS bonus_balance NUMERIC(14, 2) NOT NULL DEFAULT 0;

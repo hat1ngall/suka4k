@@ -33,7 +33,7 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
     const token = createSessionToken();
     await pool.query('INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, NOW() + INTERVAL \'30 days\')', [tokenHash(token), user.id]);
     res.cookie(COOKIE, token, cookieOptions);
-    return { id: user.id, email: user.email, nickname: user.nickname ?? null };
+    return { id: user.id, email: user.email, nickname: user.nickname ?? null, bonus_balance: user.bonus_balance ?? 0 };
   };
   app.get('/api/health', wrap(async (req, res) => { await pool.query('SELECT 1'); res.json({ ok: true }); }));
   app.post('/api/auth/register', authLimiter, wrap(async (req, res) => {
@@ -45,7 +45,7 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
     if (req.body?.consent !== true) return res.status(400).json({ error: 'Для регистрации необходимо согласие на обработку персональных данных.' });
     const passwordHash = await hashPassword(password);
     let result;
-    try { result = await pool.query('INSERT INTO users (id, email, password_hash, nickname, consent_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING id, email, nickname', [randomUUID(), email, passwordHash, nickname]); }
+    try { result = await pool.query('INSERT INTO users (id, email, password_hash, nickname, consent_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING id, email, nickname, bonus_balance', [randomUUID(), email, passwordHash, nickname]); }
     catch (error) { if (error.code === '23505') return res.status(409).json({ error: 'Аккаунт с такой почтой уже существует.' }); throw error; }
     return res.status(201).json({ user: await issueSession(res, result.rows[0]) });
   }));
@@ -53,7 +53,7 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
     const email = normalizeEmail(req.body?.email);
     const password = req.body?.password;
     if (!email || !validPassword(password)) return res.status(401).json({ error: 'Неверная почта или пароль.' });
-    const result = await pool.query('SELECT id, email, nickname, password_hash FROM users WHERE email = $1', [email]);
+    const result = await pool.query('SELECT id, email, nickname, password_hash, bonus_balance FROM users WHERE email = $1', [email]);
     const user = result.rows[0];
     if (!(await verifyPassword(password, user?.password_hash || DUMMY_HASH)) || !user) return res.status(401).json({ error: 'Неверная почта или пароль.' });
     return res.json({ user: await issueSession(res, user) });
@@ -61,7 +61,7 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
   app.get('/api/auth/me', wrap(async (req, res) => {
     const token = req.cookies[COOKIE];
     if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) return res.json({ user: null });
-    const result = await pool.query('SELECT u.id, u.email, u.nickname FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = $1 AND s.expires_at > NOW()', [tokenHash(token)]);
+    const result = await pool.query('SELECT u.id, u.email, u.nickname, u.bonus_balance FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = $1 AND s.expires_at > NOW()', [tokenHash(token)]);
     return res.json({ user: result.rows[0] || null });
   }));
   app.post('/api/auth/logout', wrap(async (req, res) => {
