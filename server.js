@@ -1,0 +1,13 @@
+import pg from 'pg';
+import { readFile } from 'node:fs/promises';
+import { createApp } from './app.js';
+if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is required');
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+pool.on('error', error => console.error('PostgreSQL pool error:', error));
+await pool.query(await readFile(new URL('./schema.sql', import.meta.url), 'utf8'));
+await pool.query('DELETE FROM sessions WHERE expires_at <= NOW()');
+const cleanup = setInterval(() => pool.query('DELETE FROM sessions WHERE expires_at <= NOW()').catch(error => console.error('Session cleanup failed:', error)), 6 * 60 * 60 * 1000);
+cleanup.unref();
+const app = createApp(pool);
+const server = app.listen(process.env.PORT || 3000, '0.0.0.0', () => console.log(`Server listening on port ${process.env.PORT || 3000}`));
+for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => server.close(() => pool.end().finally(() => process.exit(0))));
