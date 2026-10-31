@@ -73,7 +73,7 @@ html[data-theme="dark"] .theme-toggle{background:#4b3043;border-color:#956382;co
 .catalog .product h3{max-width:62%;font-family:Unbounded,Manrope,Arial,sans-serif;text-transform:uppercase;font-size:clamp(15px,1.25vw,21px);line-height:1.15;letter-spacing:-.6px;margin:14px 0 10px;overflow-wrap:anywhere}
 .catalog .product p{max-width:60%;line-height:1.5;font-size:12px;color:#957f93}
 .catalog .product .product-view{margin-top:auto;border:0;border-radius:22px;background:#ed3e8e;color:#fff;font-size:12px;font-weight:800;padding:10px 16px;cursor:pointer;box-shadow:0 3px 0 #ca8baa}
-.catalog .product .product-view:hover{background:#d72978}.catalog .product .product-art{position:absolute;z-index:1;right:0;bottom:0;width:48%;height:85%;background-image:url('/assets/catalog-mascots.png');background-repeat:no-repeat;background-size:420% 420%;background-position:var(--art-x) var(--art-y);pointer-events:none}
+.catalog .product .product-view:hover{background:#d72978}.catalog .product .product-art{position:absolute;z-index:1;right:0;bottom:0;width:48%;height:85%;background-image:url('/assets/catalog-mascots-reference-style.png');background-repeat:no-repeat;background-size:420% 420%;background-position:var(--art-x) var(--art-y);pointer-events:none}
 html[data-theme="dark"]{--paper:#151119;--shadow:#0a080c;--line:#493943}
 html[data-theme="dark"] body{background-color:#100d12;background-image:linear-gradient(#211923 1px,transparent 1px),linear-gradient(90deg,#211923 1px,transparent 1px)}
 html[data-theme="dark"] .topbar{background:#17121a}html[data-theme="dark"] .form-card,html[data-theme="dark"] .catalog{background:#18131b;border-color:#40323d}
@@ -83,6 +83,9 @@ html[data-theme="dark"] .catalog .product{background:#18131b;border-color:#41343
 @media(max-width:760px){.catalog .cards{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog .product{min-height:195px;padding:16px}.catalog .product h3{font-size:15px}}
 @media(max-width:440px){.catalog .cards{grid-template-columns:1fr}.catalog .product{min-height:190px}.catalog .product h3{font-size:20px}}
 
+
+.catalog .product .reference-art{width:50%;height:100%;background-image:url('/assets/catalog-reference-light.png');background-size:842% 391%;background-position:var(--ref-x) var(--ref-y);mix-blend-mode:darken;mask-image:linear-gradient(to right,transparent,#000 22%),linear-gradient(to bottom,transparent 16%,#000 33%);mask-composite:intersect}
+html[data-theme="dark"] .catalog .product .reference-art{background-image:url('/assets/catalog-reference-dark.png');mix-blend-mode:lighten}
 </style></head>
 <body>
 <header class="topbar"><div class="brand-group"><a class="brand" href="#top" aria-label="mupple — на главную">mupple</a><button class="round theme-toggle" type="button" aria-label="Включить тёмную тему" aria-pressed="false"><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/></svg></button></div><nav class="nav" aria-label="Главное меню"><a href="#top">Главная</a><a href="/faq">FAQ</a><button class="nav-link" type="button" data-open="support-dialog">Поддержка</button><a href="/donuts">Donuts</a></nav><label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><input id="search" type="search" placeholder="Ускорь процесс поиска" aria-label="Поиск по каталогу"><span class="search-arrow">↗</span></label><div class="nav-right"><button class="pill" type="button" data-open="social-dialog">СОЦСЕТИ</button><button class="pill" type="button" data-open="cart-dialog">КОРЗИНА <span id="cart-count">0</span></button><a class="pill" href="#catalog">КАТАЛОГ ↗</a><button class="account-button" id="account-button" type="button">ВОЙТИ</button></div></header>
@@ -113,23 +116,23 @@ const themeToggle=document.querySelector('.theme-toggle');
 function syncTheme(){const dark=document.documentElement.dataset.theme==='dark';themeToggle.setAttribute('aria-pressed',String(dark));themeToggle.setAttribute('aria-label',dark?'Включить светлую тему':'Включить тёмную тему');document.querySelector('meta[name="theme-color"]').setAttribute('content',dark?'#19131d':'#fff4f9')}
 themeToggle.addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;try{localStorage.setItem('theme',next)}catch(e){}syncTheme()});syncTheme();
 const products=[
-{name:'Fortnite',group:'Донат',art:0}, {name:'Valorant',group:'Донат',art:1},
-{name:'PUBG Mobile',group:'Донат',art:2}, {name:'Xbox',group:'Пополнение',art:3},
-{name:'PlayStation Store',group:'Пополнение',art:3}, {name:'Zenless Zone Zero',group:'Донат',art:6},
-{name:'Marvel Rivals',group:'Донат',art:11}, {name:'Roblox',group:'Донат',art:9},
-{name:'Apple',group:'Пополнение',art:8}, {name:'Standoff 2',group:'Донат',art:2},
-{name:'Minecraft',group:'Пополнение',art:4}, {name:'Google Play',group:'Пополнение',art:9},
-{name:'Riot Games',group:'Пополнение',art:1}, {name:'Amazon',group:'Пополнение',art:8},
-{name:'Netflix',group:'Подписки',art:13}, {name:'Apex Legends',group:'Донат',art:0},
-{name:'EA Sports FC 26',group:'Донат',art:5}, {name:'EA',group:'Пополнение',art:5},
-{name:'Battle.net',group:'Пополнение',art:12}, {name:'Steam Gifts',group:'Пополнение',art:10},
-{name:'ExitLag',group:'Подписки',art:15}, {name:'Telegram Stars',group:'Пополнение',art:7},
-{name:'Nintendo',group:'Пополнение',art:3}, {name:'ChatGPT / OpenAI',group:'Пополнение',art:11},
-{name:'Spotify',group:'Подписки',art:7}, {name:'Free Fire',group:'Донат',art:2},
-{name:'Steam',group:'Пополнение',art:10}, {name:'Honkai: Star Rail',group:'Донат',art:6}
+{name:'Fortnite',group:'Донат',art:0,ref:0}, {name:'Valorant',group:'Донат',art:1,ref:1},
+{name:'PUBG Mobile',group:'Донат',art:2,ref:2}, {name:'Xbox',group:'Пополнение',art:1},
+{name:'PlayStation Store',group:'Пополнение',art:1}, {name:'Zenless Zone Zero',group:'Донат',art:15},
+{name:'Marvel Rivals',group:'Донат',art:13}, {name:'Roblox',group:'Донат',art:9,ref:6},
+{name:'Apple',group:'Пополнение',art:0}, {name:'Standoff 2',group:'Донат',art:14},
+{name:'Minecraft',group:'Пополнение',art:4,ref:7}, {name:'Google Play',group:'Пополнение',art:2},
+{name:'Riot Games',group:'Пополнение',art:13}, {name:'Amazon',group:'Пополнение',art:8},
+{name:'Netflix',group:'Подписки',art:10}, {name:'Apex Legends',group:'Донат',art:0,ref:5},
+{name:'EA Sports FC 26',group:'Донат',art:3}, {name:'EA',group:'Пополнение',art:3},
+{name:'Battle.net',group:'Пополнение',art:12}, {name:'Steam Gifts',group:'Пополнение',art:0},
+{name:'ExitLag',group:'Подписки',art:11}, {name:'Telegram Stars',group:'Пополнение',art:2},
+{name:'Nintendo',group:'Пополнение',art:1}, {name:'ChatGPT / OpenAI',group:'Пополнение',art:9},
+{name:'Spotify',group:'Подписки',art:7}, {name:'Free Fire',group:'Донат',art:14},
+{name:'Steam',group:'Пополнение',art:5}, {name:'Honkai: Star Rail',group:'Донат',art:6,ref:11}
 ];
 let category='Все';const cards=document.querySelector('#cards'),empty=document.querySelector('#empty'),search=document.querySelector('#search');
-function render(){const query=search.value.trim().toLocaleLowerCase('ru');const matches=products.filter(item=>(query||category==='Все'||item.group===category)&&(!query||`${item.name} ${item.group}`.toLocaleLowerCase('ru').includes(query)));cards.innerHTML=matches.map(item=>`<article class="product"><span class="product-art" style="--art-x:${(item.art%4)*100/3}%;--art-y:${Math.floor(item.art/4)*100/3}%" aria-hidden="true"></span><small>${item.group}</small><h3>${item.name}</h3><p>Товары и предложения</p><button class="product-view" type="button" data-product="${products.indexOf(item)}">Посмотреть →</button></article>`).join('');empty.hidden=matches.length>0}
+function render(){const query=search.value.trim().toLocaleLowerCase('ru');const matches=products.filter(item=>(query||category==='Все'||item.group===category)&&(!query||`${item.name} ${item.group}`.toLocaleLowerCase('ru').includes(query)));cards.innerHTML=matches.map(item=>`<article class="product"><span class="product-art ${item.ref===undefined?'':'reference-art'}" style="--art-x:${(item.art%4)*100/3}%;--art-y:${Math.floor(item.art/4)*100/3}%;--ref-x:${(165+(item.ref%4)*316)/1128*100}%;--ref-y:${(16+Math.floor(item.ref/4)*230)/635*100}%" aria-hidden="true"></span><small>${item.group}</small><h3>${item.name}</h3><p>Товары и предложения</p><button class="product-view" type="button" data-product="${products.indexOf(item)}">Посмотреть →</button></article>`).join('');empty.hidden=matches.length>0}
 cards.addEventListener('click',event=>{const button=event.target.closest('[data-product]');if(!button)return;const item=products[Number(button.dataset.product)];if(!item)return;document.querySelector('#product-dialog-title').textContent=item.name;document.querySelector('#product-dialog-category').textContent=item.group;document.querySelector('#product-dialog').showModal()});
 document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>{category=btn.dataset.category;document.querySelectorAll('.tab').forEach(t=>{t.classList.toggle('active',t===btn);t.setAttribute('aria-selected',t===btn?'true':'false')});render()}));search.addEventListener('input',render);search.addEventListener('keydown',e=>{if(e.key==='Enter')document.querySelector('#catalog').scrollIntoView({behavior:'smooth'})});document.querySelectorAll('[data-amount]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelector('#amount').value=btn.dataset.amount;document.querySelectorAll('[data-amount]').forEach(b=>b.classList.toggle('active',b===btn))}));document.querySelector('#amount').addEventListener('input',e=>document.querySelectorAll('[data-amount]').forEach(b=>b.classList.toggle('active',b.dataset.amount===e.target.value)));document.querySelector('#platform').addEventListener('change',e=>{let steam=e.target.value==='Steam';document.querySelector('#login-label').textContent=steam?'Логин Steam':'ID или логин';document.querySelector('#login').placeholder=steam?'Логин, не никнейм':'Укажите данные аккаунта';document.querySelector('#region-field').hidden=!steam});document.querySelector('#topup').addEventListener('submit',e=>{e.preventDefault();const amount=Number(document.querySelector('#amount').value), login=document.querySelector('#login').value.trim();if(!login||!Number.isFinite(amount)||amount<1){notify('Укажите логин и сумму пополнения.');return}cart.push({platform:document.querySelector('#platform').value,login,region:document.querySelector('#region-field').hidden?'':document.querySelector('#region').value,amount:Math.round(amount*100)/100});saveCart();notify('Добавлено в корзину');});render();
 
