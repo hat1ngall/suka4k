@@ -17,3 +17,16 @@ CREATE TABLE IF NOT EXISTS sessions (
 CREATE INDEX IF NOT EXISTS sessions_expires_at_idx ON sessions(expires_at);
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS bonus_balance NUMERIC(14, 2) NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS promo_codes (
+  code VARCHAR(32) PRIMARY KEY,
+  percent INTEGER NOT NULL CHECK (percent BETWEEN 1 AND 100),
+  active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS admin_sessions (
+  token_hash TEXT PRIMARY KEY,
+  secret_hash TEXT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL
+);
+CREATE INDEX IF NOT EXISTS admin_sessions_expires_at_idx ON admin_sessions(expires_at);

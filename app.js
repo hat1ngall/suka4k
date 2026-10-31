@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { createSessionToken, hashPassword, normalizeEmail, tokenHash, validPassword, verifyPassword } from './auth.js';
 import { resolve } from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash, timingSafeEqual } from 'node:crypto';
 const COOKIE = 'voreq_session';
 const MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 const DUMMY_HASH = 'scrypt$00000000000000000000000000000000$' + '00'.repeat(64);
@@ -16,7 +16,7 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
   app.use(express.json({ limit: '8kb' }));
   app.use(cookieParser());
   app.use('/api', (req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
-  app.use('/api/auth', (req, res, next) => {
+  app.use(['/api/auth', '/api/admin', '/api/promo'], (req, res, next) => {
     if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) return next();
     const source = req.get('origin') || req.get('referer');
     try {
@@ -28,7 +28,7 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
   const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 20, standardHeaders: true, legacyHeaders: false, message: { error: 'Слишком много попыток. Попробуйте позже.' } });
   const cookieOptions = { httpOnly: true, secure: production, sameSite: 'lax', path: '/', maxAge: MAX_AGE };
   const sendError = (res, error) => { console.error('Auth request failed:', error); res.status(500).json({ error: 'Ошибка сервера. Попробуйте позже.' }); };
-  const wrap = fn => (req, res) => Promise.resolve(fn(req, res)).catch(error => sendError(res, error));
+  const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(error => sendError(res, error));
   const issueSession = async (res, user) => {
     const token = createSessionToken();
     await pool.query('INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, NOW() + INTERVAL \'30 days\')', [tokenHash(token), user.id]);
@@ -69,6 +69,67 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
     if (typeof token === 'string' && /^[a-f0-9]{64}$/.test(token)) await pool.query('DELETE FROM sessions WHERE token_hash = $1', [tokenHash(token)]);
     res.clearCookie(COOKIE, { httpOnly: true, secure: production, sameSite: 'lax', path: '/' });
     return res.json({ user: null });
+  }));
+  // The admin password is configured on the server, never in browser code.
+  const adminPassword = process.env.ADMIN_PASSWORD || '';
+  const adminSecretHash = adminPassword.length >= 16 ? createHash('sha256').update(adminPassword).digest('hex') : null;
+  const adminCookie = 'mupple_admin';
+  const adminOptions = { httpOnly: true, secure: production, sameSite: 'strict', path: '/api/admin', maxAge: 8 * 60 * 60 * 1000 };
+  const adminLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 10, standardHeaders: true, legacyHeaders: false, message: { error: 'Слишком много попыток. Попробуйте позже.' } });
+  const promoLimiter = rateLimit({ windowMs: 60 * 1000, limit: 30, standardHeaders: true, legacyHeaders: false, message: { error: 'Слишком много запросов. Попробуйте позже.' } });
+  const normalizePromo = value => typeof value === 'string' ? value.trim().toUpperCase() : '';
+  const validPromo = code => /^[A-Z0-9_-]{3,32}$/.test(code);
+  const requireAdmin = wrap(async (req, res, next) => {
+    const token = req.cookies[adminCookie];
+    if (!adminSecretHash || typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) return res.status(401).json({ error: 'Войдите в админ-панель.' });
+    const result = await pool.query('SELECT 1 FROM admin_sessions WHERE token_hash = $1 AND secret_hash = $2 AND expires_at > NOW()', [tokenHash(token), adminSecretHash]);
+    if (!result.rows.length) return res.status(401).json({ error: 'Войдите в админ-панель.' });
+    next();
+  });
+  app.post('/api/admin/login', adminLimiter, wrap(async (req, res) => {
+    if (!adminSecretHash) return res.status(503).json({ error: 'Пароль администратора ещё не настроен на сервере.' });
+    const password = typeof req.body?.password === 'string' && req.body.password.length <= 1024 ? req.body.password : '';
+    const candidate = createHash('sha256').update(password).digest();
+    if (!timingSafeEqual(candidate, Buffer.from(adminSecretHash, 'hex'))) return res.status(401).json({ error: 'Неверный пароль.' });
+    const token = createSessionToken();
+    await pool.query("INSERT INTO admin_sessions (token_hash, secret_hash, expires_at) VALUES ($1, $2, NOW() + INTERVAL '8 hours')", [tokenHash(token), adminSecretHash]);
+    res.cookie(adminCookie, token, adminOptions);
+    return res.json({ ok: true });
+  }));
+  app.post('/api/admin/logout', requireAdmin, wrap(async (req, res) => {
+    await pool.query('DELETE FROM admin_sessions WHERE token_hash = $1', [tokenHash(req.cookies[adminCookie])]);
+    res.clearCookie(adminCookie, { httpOnly: true, secure: production, sameSite: 'strict', path: '/api/admin' });
+    res.json({ ok: true });
+  }));
+  app.get('/api/admin/promos', requireAdmin, wrap(async (req, res) => {
+    const result = await pool.query('SELECT code, percent, active, created_at FROM promo_codes ORDER BY created_at DESC');
+    res.json({ promos: result.rows });
+  }));
+  app.post('/api/admin/promos', requireAdmin, wrap(async (req, res) => {
+    const code = normalizePromo(req.body?.code);
+    const percent = Number(req.body?.percent);
+    if (!validPromo(code) || !Number.isInteger(percent) || percent < 1 || percent > 100) return res.status(400).json({ error: 'Код: 3–32 латинских буквы, цифры, _ или -. Скидка: от 1 до 100%.' });
+    try {
+      await pool.query('INSERT INTO promo_codes (code, percent) VALUES ($1, $2)', [code, percent]);
+    } catch (error) {
+      if (error.code === '23505') return res.status(409).json({ error: 'Такой промокод уже существует.' });
+      throw error;
+    }
+    res.status(201).json({ code, percent });
+  }));
+  app.post('/api/admin/promos/deactivate', requireAdmin, wrap(async (req, res) => {
+    const code = normalizePromo(req.body?.code);
+    if (!validPromo(code)) return res.status(400).json({ error: 'Некорректный промокод.' });
+    const result = await pool.query('UPDATE promo_codes SET active = FALSE WHERE code = $1 RETURNING code', [code]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Промокод не найден.' });
+    res.json({ ok: true });
+  }));
+  app.post('/api/promo/check', promoLimiter, wrap(async (req, res) => {
+    const code = normalizePromo(req.body?.code);
+    if (!validPromo(code)) return res.status(400).json({ error: 'Промокод не найден.' });
+    const result = await pool.query('SELECT code, percent FROM promo_codes WHERE code = $1 AND active = TRUE', [code]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Промокод не найден или больше не действует.' });
+    res.json(result.rows[0]);
   }));
   app.use('/api', (req, res) => res.status(404).json({ error: 'Страница не найдена.' }));
   app.use(express.static(publicDir, { extensions: ['html'] }));
