@@ -96,8 +96,9 @@ html[data-theme="dark"] .hero h1 .pink,html[data-theme="dark"] .catalog h2 .pink
 
 /* Keep the banner pink all the way to its rounded edges. */
 .hero{background:#f7cfdf;isolation:isolate}
-.hero:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:url('/assets/banner-user.png') right 3% center/auto 88% no-repeat;mask-image:linear-gradient(to right,transparent 48%,#000 64%),linear-gradient(to bottom,transparent 12%,#000 19%,#000 70%,transparent 78%),linear-gradient(to left,transparent 5%,#000 10%);mask-composite:intersect}
-.hero:after{z-index:1}.hero-copy,.ribbon{z-index:2}
+.hero:before{content:"";position:absolute;inset:auto;right:3%;bottom:135px;width:min(57%,460px);height:72%;z-index:1;pointer-events:none;background:url('/assets/hero-mascot-cutout.png') center bottom/contain no-repeat;mask-image:none}
+.hero:after{z-index:0}.hero-copy,.ribbon{z-index:2}
+@media(max-width:760px){.hero:before{width:60%;height:62%;right:2%;bottom:105px}}
 
 /* Show each complete character without stretching or neighbouring tiles. */
 .catalog .product .product-art{background-size:400% 400%;width:48%;height:auto;aspect-ratio:1303/1207;background-position:var(--art-x) var(--art-y)}
