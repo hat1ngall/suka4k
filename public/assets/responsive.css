@@ -69,3 +69,17 @@ html[data-theme="dark"] .catalog .product p{color:#e1d8e2}
 @media(max-width:760px){.catalog .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.catalog .product{min-height:195px;padding:14px 12px}.catalog .product h3{font-size:14px;max-width:70%}.catalog .product p{font-size:11px}.catalog .product .product-view{padding:9px 12px;font-size:11px}}
 @media(max-width:350px){.catalog .cards{grid-template-columns:1fr}.catalog .product{min-height:190px}.catalog .product h3{font-size:18px}}
 @media(min-width:761px){.catalog .product .product-art,.catalog .product .reference-art,.catalog .product .product-art.single-soldier,.catalog .product .product-art.single-streamer{width:64%;right:-4%}}
+/* Cinematic catalog artwork; text remains real, readable UI. */
+.catalog .product, .catalog .product:nth-child(n), html[data-theme="dark"] .catalog .product, html[data-theme="dark"] .catalog .product:nth-child(n){background:#10101c;border:1px solid #ddd0df;box-shadow:0 4px 15px #6b315b1a;min-height:210px;color:#fff}
+html[data-theme="dark"] .catalog .product,html[data-theme="dark"] .catalog .product:nth-child(n){border-color:#403755;box-shadow:0 4px 15px #0004}
+.catalog .product .product-scene{position:absolute;inset:0;z-index:0;background-image:linear-gradient(90deg,rgba(8,9,20,.98) 0%,rgba(8,9,20,.9) 35%,rgba(8,9,20,.15) 100%),url('/assets/catalog-scenes-v2.png');background-size:100% 100%,400% 200%;background-position:center,var(--scene-x) var(--scene-y);background-repeat:no-repeat}
+.catalog .product:after{display:none}
+.catalog .product small,.catalog .product h3,.catalog .product p,.catalog .product button{position:relative;z-index:2}
+.catalog .product small,html[data-theme="dark"] .catalog .product small{color:#f4b3d5}
+.catalog .product h3,html[data-theme="dark"] .catalog .product h3{color:#fff;text-shadow:0 1px 4px #000;font-size:clamp(14px,1.3vw,20px);max-width:68%}
+.catalog .product p,html[data-theme="dark"] .catalog .product p{color:#f2edf5;text-shadow:0 1px 4px #000;max-width:54%}
+.catalog .product .product-art,.catalog .product .reference-art,.catalog .product .product-art.single-soldier,.catalog .product .product-art.single-streamer{width:68%;right:-5%;bottom:0;filter:drop-shadow(0 5px 7px #05030dbb)}
+.catalog .product .product-view{background:#f02683;color:white;box-shadow:0 3px 10px #1b061b70}
+.catalog .product:hover{transform:translateY(-3px);box-shadow:0 8px 18px #5c255331}
+@media(max-width:760px){.catalog .product,.catalog .product:nth-child(n){min-height:200px}.catalog .product h3{font-size:14px}.catalog .product .product-art,.catalog .product .reference-art,.catalog .product .product-art.single-soldier,.catalog .product .product-art.single-streamer{width:70%;right:-7%}}
+@media(max-width:440px){.catalog .cards{grid-template-columns:1fr}.catalog .product,.catalog .product:nth-child(n){min-height:190px;padding:17px}.catalog .product h3{font-size:19px}.catalog .product p{font-size:12px}.catalog .product .product-art,.catalog .product .reference-art,.catalog .product .product-art.single-soldier,.catalog .product .product-art.single-streamer{width:55%;right:0}}
