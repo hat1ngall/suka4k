@@ -86,3 +86,9 @@ html[data-theme="dark"] .catalog .product,html[data-theme="dark"] .catalog .prod
 /* Product-specific versions of the banner mascot. */
 .catalog .product .mascot-v3{position:absolute;z-index:1;right:0;bottom:0;width:65%;aspect-ratio:1;background-image:var(--mascot-image);background-repeat:no-repeat;background-size:300% 200%;background-position:var(--mascot-x) var(--mascot-y);-webkit-mask-image:linear-gradient(to right,transparent 0%,#000 22%,#000 100%);mask-image:linear-gradient(to right,transparent 0%,#000 22%,#000 100%);pointer-events:none}
 @media(max-width:440px){.catalog .product .mascot-v3{width:58%}}
+/* Each card uses a complete, consistently lit 3D scene. */
+.catalog .product .product-scene{overflow:hidden;background:#090a16;isolation:isolate}
+.catalog .product .product-scene:before{content:"";position:absolute;right:0;top:0;height:100%;width:auto;aspect-ratio:var(--cinematic-ratio);background-image:var(--cinematic-image);background-size:200% 300%;background-position:var(--cinematic-x) var(--cinematic-y);background-repeat:no-repeat}
+.catalog .product .product-scene:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,8,19,.96),rgba(6,8,19,.72) 37%,transparent 76%)}
+.catalog .product h3{max-width:68%}
+.catalog .product .product-scene:before{background-size:200% 306%}
