@@ -103,3 +103,5 @@ html[data-theme="dark"] .ribbon-track{--ribbon-icon-detail:#43223b}
 /* Reveal more of each scene to the left of the mascot. */
 .catalog .product .product-scene:before{right:-12%}
 
+/* Keep the top-up panel stable when the Steam-only region is hidden. */
+#region-field[hidden]{display:block!important;visibility:hidden;pointer-events:none}
