@@ -107,3 +107,26 @@ html[data-theme="dark"] .ribbon-track{--ribbon-icon-detail:#43223b}
 #region-field[hidden]{display:block!important;visibility:hidden;pointer-events:none}
 /* Crop slightly inside each scene so neighbouring atlas cells never show. */
 .catalog .product .product-scene:before{background-size:204% 320%}
+/* Unified internal pages, matching the storefront header and palette. */
+.secondary-page{background-color:#fff1f7;background-image:linear-gradient(#f4dce8 1px,transparent 1px),linear-gradient(90deg,#f4dce8 1px,transparent 1px);background-size:48px 48px}
+html[data-theme="dark"] .secondary-page{background-color:#100d12;background-image:linear-gradient(#211923 1px,transparent 1px),linear-gradient(90deg,#211923 1px,transparent 1px)}
+.secondary-page .topbar{height:64px;display:flex;align-items:center;gap:24px;padding:0 2%;background:#fff9fc;border-bottom:1px solid #f2e3eb}
+html[data-theme="dark"] .secondary-page .topbar{background:#100e12;border-color:#252128}
+.secondary-page .brand-group{display:flex;align-items:center;gap:17px;flex:none}
+.secondary-page .brand-group .brand{font-size:29px;padding-right:17px;border-right:1px solid #e4cedb}
+.secondary-page .nav{display:flex;align-items:center;gap:24px;font-size:13px;font-weight:800}
+.secondary-page .nav a[aria-current="page"]{position:relative}
+.secondary-page .nav a[aria-current="page"]:after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:2px;border-radius:2px;background:#ee398b}
+.secondary-page .theme-toggle.page-theme{position:relative;isolation:isolate;display:flex;align-items:center;justify-content:space-between;flex:none;width:64px;min-width:64px;height:34px;margin:0;padding:0 8px;border:1px solid #d3a6c3;border-radius:24px;background:#f1d4e5;color:#8b5277;cursor:pointer}
+.secondary-page .theme-toggle.page-theme:before{content:"";position:absolute;z-index:0;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:white;box-shadow:0 2px 5px #6b375a30;transition:transform .25s}
+.secondary-page .theme-toggle.page-theme svg{position:relative;z-index:1;width:17px;height:17px;flex:none}
+html[data-theme="dark"] .secondary-page .theme-toggle.page-theme{background:#4b3043;border-color:#8a617b;color:#f3c9df}
+html[data-theme="dark"] .secondary-page .theme-toggle.page-theme:before{transform:translateX(30px);background:#ead7e6}
+html[data-theme="dark"] .secondary-page .theme-toggle.page-theme .icon-moon{color:#6c415e}
+.secondary-page .page-donuts{display:inline-flex;align-items:center;gap:5px;height:38px;margin-left:auto;padding:0 13px;border:1px solid #dfc2d3;border-radius:24px;background:#f9dfec;color:#2c1736;font-size:12px;font-weight:800;white-space:nowrap}
+html[data-theme="dark"] .secondary-page .page-donuts{background:#262229;border-color:#504953;color:#fff;--donut-hole:#262229}
+.secondary-page .catalog,.secondary-page .card{background:#fffafd;border-color:#e8cedd;box-shadow:7px 8px 0 #eacdde}
+html[data-theme="dark"] .secondary-page .catalog,html[data-theme="dark"] .secondary-page .card{background:#17121b;border-color:#403040;box-shadow:7px 8px 0 #09070a;color:#f9ecf5}
+@media(max-width:600px){.secondary-page .topbar{height:auto;min-height:64px;display:flex;flex-wrap:wrap;gap:12px;padding:12px 4%}.secondary-page .brand-group{order:0;margin-right:auto}.secondary-page .page-donuts{order:1;margin-left:0}.secondary-page .nav{order:2;flex:0 0 100%;width:100%;padding:4px 0;gap:22px}.secondary-page .brand-group .brand{font-size:25px;padding-right:8px}.secondary-page .brand-group{gap:8px}}
+/* The middle row in atlas four has a slightly shorter cell. */
+.catalog .product .product-scene[style*="catalog-cinematic-4.png"][style*="--cinematic-y:50%"]:before{background-size:204% 350%}
