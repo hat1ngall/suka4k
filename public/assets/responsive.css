@@ -105,3 +105,5 @@ html[data-theme="dark"] .ribbon-track{--ribbon-icon-detail:#43223b}
 
 /* Keep the top-up panel stable when the Steam-only region is hidden. */
 #region-field[hidden]{display:block!important;visibility:hidden;pointer-events:none}
+/* Crop slightly inside each scene so neighbouring atlas cells never show. */
+.catalog .product .product-scene:before{background-size:204% 320%}
