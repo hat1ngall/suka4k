@@ -100,3 +100,6 @@ html[data-theme="dark"] .hero{background:#382337}
 html[data-theme="dark"] .ribbon-track{--ribbon-icon-detail:#43223b}
 .ribbon-track span{display:flex;align-items:center;gap:.18em;padding-right:.18em}
 .ribbon-gamepad{display:block;flex:none;width:1.05em;height:.8em;color:currentColor}
+/* Reveal more of each scene to the left of the mascot. */
+.catalog .product .product-scene:before{right:-12%}
+
