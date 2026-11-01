@@ -92,3 +92,11 @@ html[data-theme="dark"] .catalog .product,html[data-theme="dark"] .catalog .prod
 .catalog .product .product-scene:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,8,19,.96),rgba(6,8,19,.72) 37%,transparent 76%)}
 .catalog .product h3{max-width:68%}
 .catalog .product .product-scene:before{background-size:200% 306%}
+/* Flat hero colors and a gamepad in the scrolling ribbon. */
+.hero{background:#f7cfdf}
+.hero:after,html[data-theme="dark"] .hero:after{background:none}
+html[data-theme="dark"] .hero{background:#382337}
+.ribbon-track{--ribbon-icon-detail:#f8dce9}
+html[data-theme="dark"] .ribbon-track{--ribbon-icon-detail:#43223b}
+.ribbon-track span{display:flex;align-items:center;gap:.18em;padding-right:.18em}
+.ribbon-gamepad{display:block;flex:none;width:1.05em;height:.8em;color:currentColor}
