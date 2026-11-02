@@ -1,0 +1,11 @@
+/* The top-up badge follows the selected service. */
+.steam-icon{position:relative;overflow:visible;flex:none}
+.steam-icon img[hidden],.steam-icon .platform-initials[hidden]{display:none!important}
+.steam-icon[data-platform-icon="telegram"],html[data-theme="dark"] .steam-icon[data-platform-icon="telegram"]{background:#229ed9}
+.steam-icon[data-platform-icon="pubg"],html[data-theme="dark"] .steam-icon[data-platform-icon="pubg"]{background:#76552b}
+.steam-icon[data-platform-icon="telegram"] img,.steam-icon[data-platform-icon="pubg"] img,html[data-theme="dark"] .steam-icon[data-platform-icon="telegram"] img,html[data-theme="dark"] .steam-icon[data-platform-icon="pubg"] img{filter:invert(1)}
+.steam-icon[data-platform-icon="marvel"],html[data-theme="dark"] .steam-icon[data-platform-icon="marvel"]{background:#792b2e url('/assets/catalog-cinematic-2.png') 32% 6%/auto 600% no-repeat}
+.steam-icon[data-platform-icon="zenless"],html[data-theme="dark"] .steam-icon[data-platform-icon="zenless"]{background:#705130 url('/assets/catalog-cinematic-1.png') 91% 86%/auto 600% no-repeat}
+.steam-icon[data-platform-icon="freefire"],html[data-theme="dark"] .steam-icon[data-platform-icon="freefire"]{background:#864327 url('/assets/catalog-cinematic-5.png') 34% 7%/auto 600% no-repeat}
+.steam-icon[data-platform-icon="honkai"],html[data-theme="dark"] .steam-icon[data-platform-icon="honkai"]{background:#344775 url('/assets/catalog-cinematic-5.png') 34% 48%/auto 600% no-repeat}
+.platform-initials{position:absolute;right:-5px;bottom:-2px;padding:2px 4px;border-radius:6px;background:#281829;color:#fff;font:800 8px/1.2 Manrope,Arial,sans-serif;letter-spacing:.02em;box-shadow:0 0 0 1px #ffffffaa}
