@@ -5,6 +5,7 @@ import { rateLimit } from 'express-rate-limit';
 import { createSessionToken, hashPassword, normalizeEmail, tokenHash, validPassword, verifyPassword } from './auth.js';
 import { resolve } from 'node:path';
 import { randomUUID, createHash, timingSafeEqual } from 'node:crypto';
+const CATALOG_PRODUCTS = Object.freeze(['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','Zenless Zone Zero','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail']);
 const COOKIE = 'voreq_session';
 const MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 const DUMMY_HASH = 'scrypt$00000000000000000000000000000000$' + '00'.repeat(64);
@@ -61,7 +62,7 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
   app.get('/api/auth/me', wrap(async (req, res) => {
     const token = req.cookies[COOKIE];
     if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) return res.json({ user: null });
-    const result = await pool.query('SELECT u.id, u.email, u.nickname, u.bonus_balance FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = $1 AND s.expires_at > NOW()', [tokenHash(token)]);
+    const result = await pool.query('SELECT u.id, u.email, u.nickname, u.bonus_balance, u.purchase_blocked FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = $1 AND s.expires_at > NOW()', [tokenHash(token)]);
     return res.json({ user: result.rows[0] || null });
   }));
   app.post('/api/auth/logout', wrap(async (req, res) => {
@@ -122,6 +123,74 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
     if (!validPromo(code)) return res.status(400).json({ error: 'Некорректный промокод.' });
     const result = await pool.query('UPDATE promo_codes SET active = FALSE WHERE code = $1 RETURNING code', [code]);
     if (!result.rows.length) return res.status(404).json({ error: 'Промокод не найден.' });
+    res.json({ ok: true });
+  }));
+  app.post('/api/admin/promos/delete', requireAdmin, wrap(async (req, res) => {
+    const code = normalizePromo(req.body?.code);
+    if (!validPromo(code)) return res.status(400).json({ error: 'Некорректный промокод.' });
+    const result = await pool.query('DELETE FROM promo_codes WHERE code = $1 RETURNING code', [code]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Промокод не найден.' });
+    res.json({ ok: true });
+  }));
+  // A sales row represents a confirmed paid order, not a browser-side cart.
+  app.get('/api/admin/stats', requireAdmin, wrap(async (req, res) => {
+    const periods = { day: 1, week: 7, month: 30 };
+    const period = typeof req.query.period === 'string' && Object.hasOwn(periods, req.query.period) ? req.query.period : 'week';
+    const users = await pool.query('SELECT COUNT(*)::integer AS total FROM users');
+    const summary = await pool.query(`SELECT COUNT(*)::integer AS recorded_orders,
+      COUNT(*) FILTER (WHERE (paid_at AT TIME ZONE 'Europe/Moscow')::date = (NOW() AT TIME ZONE 'Europe/Moscow')::date)::integer AS orders_today,
+      COALESCE(SUM(rub_amount) FILTER (WHERE (paid_at AT TIME ZONE 'Europe/Moscow')::date = (NOW() AT TIME ZONE 'Europe/Moscow')::date), 0) AS rub_today,
+      COALESCE(SUM(bonus_amount) FILTER (WHERE (paid_at AT TIME ZONE 'Europe/Moscow')::date = (NOW() AT TIME ZONE 'Europe/Moscow')::date), 0) AS bonus_today,
+      COUNT(*) FILTER (WHERE bonus_amount > 0 AND (paid_at AT TIME ZONE 'Europe/Moscow')::date = (NOW() AT TIME ZONE 'Europe/Moscow')::date)::integer AS bonus_orders_today
+      FROM sales_orders`);
+    const daily = await pool.query(`WITH days AS (
+      SELECT generate_series(((NOW() AT TIME ZONE 'Europe/Moscow')::date - ($1::integer - 1))::timestamp, ((NOW() AT TIME ZONE 'Europe/Moscow')::date)::timestamp, INTERVAL '1 day')::date AS day
+    ) SELECT to_char(days.day, 'YYYY-MM-DD') AS day,
+      COUNT(sales_orders.id) FILTER (WHERE sales_orders.rub_amount > 0)::integer AS rub_orders,
+      COUNT(sales_orders.id) FILTER (WHERE sales_orders.bonus_amount > 0)::integer AS bonus_orders
+      FROM days LEFT JOIN sales_orders ON (sales_orders.paid_at AT TIME ZONE 'Europe/Moscow')::date = days.day
+      GROUP BY days.day ORDER BY days.day`, [periods[period]]);
+    const data = summary.rows[0];
+    res.json({ registered_users: Number(users.rows[0].total), orders_available: Number(data.recorded_orders) > 0,
+      orders_today: Number(data.orders_today), rub_today: Number(data.rub_today), bonus_today: Number(data.bonus_today),
+      bonus_orders_today: Number(data.bonus_orders_today), period, timezone: 'Europe/Moscow', series: daily.rows });
+  }));
+  app.get('/api/admin/users', requireAdmin, wrap(async (req, res) => {
+    const page = Math.max(1, Math.min(1000000, Number.parseInt(req.query.page, 10) || 1));
+    const result = await pool.query('SELECT id, email, nickname, bonus_balance, purchase_blocked, created_at, consent_at FROM users ORDER BY created_at DESC, id LIMIT 51 OFFSET $1', [(page - 1) * 50]);
+    res.json({ users: result.rows.slice(0, 50), page, has_more: result.rows.length > 50 });
+  }));
+  app.post('/api/admin/users/:id/block', requireAdmin, wrap(async (req, res) => {
+    if (typeof req.body?.blocked !== 'boolean') return res.status(400).json({ error: 'Некорректное состояние блокировки.' });
+    const result = await pool.query('UPDATE users SET purchase_blocked = $2 WHERE id = $1 RETURNING id, purchase_blocked', [req.params.id, req.body.blocked]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Пользователь не найден.' });
+    res.json({ user: result.rows[0] });
+  }));
+  app.post('/api/admin/users/:id/bonus', requireAdmin, wrap(async (req, res) => {
+    const value = req.body?.balance;
+    if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 999999999999.99 || Math.abs(value * 100 - Math.round(value * 100)) > 1e-6) return res.status(400).json({ error: 'Укажите неотрицательный баланс с точностью до двух знаков.' });
+    const result = await pool.query('UPDATE users SET bonus_balance = $2 WHERE id = $1 RETURNING id, bonus_balance', [req.params.id, value.toFixed(2)]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Пользователь не найден.' });
+    res.json({ user: result.rows[0] });
+  }));
+  app.post('/api/admin/users/:id/password', requireAdmin, wrap(async (req, res) => {
+    if (!validPassword(req.body?.password)) return res.status(400).json({ error: 'Пароль должен содержать от 8 до 128 символов.' });
+    const passwordHash = await hashPassword(req.body.password);
+    const result = await pool.query('WITH changed AS (UPDATE users SET password_hash = $2 WHERE id = $1 RETURNING id), revoked AS (DELETE FROM sessions WHERE user_id IN (SELECT id FROM changed)) SELECT id FROM changed', [req.params.id, passwordHash]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Пользователь не найден.' });
+    res.json({ ok: true });
+  }));
+  const readPrices = async () => {
+    const result = await pool.query('SELECT product_name, price_rub, updated_at FROM catalog_prices');
+    const prices = new Map(result.rows.map(row => [row.product_name, row]));
+    return CATALOG_PRODUCTS.map(name => ({ name, price_rub: prices.get(name)?.price_rub ?? null, updated_at: prices.get(name)?.updated_at ?? null }));
+  };
+  app.get('/api/catalog/prices', wrap(async (req, res) => res.json({ products: await readPrices() })));
+  app.get('/api/admin/prices', requireAdmin, wrap(async (req, res) => res.json({ products: await readPrices() })));
+  app.post('/api/admin/prices', requireAdmin, wrap(async (req, res) => {
+    const { name, price } = req.body || {};
+    if (!CATALOG_PRODUCTS.includes(name) || (price !== null && (typeof price !== 'number' || !Number.isFinite(price) || price < 0 || price > 9999999999.99 || Math.abs(price * 100 - Math.round(price * 100)) > 1e-6))) return res.status(400).json({ error: 'Укажите товар и корректную цену в рублях.' });
+    await pool.query('INSERT INTO catalog_prices (product_name, price_rub) VALUES ($1, $2) ON CONFLICT (product_name) DO UPDATE SET price_rub = EXCLUDED.price_rub, updated_at = NOW()', [name, price === null ? null : price.toFixed(2)]);
     res.json({ ok: true });
   }));
   app.post('/api/promo/check', promoLimiter, wrap(async (req, res) => {
