@@ -1,2 +1,5 @@
 /* Replace the Steam region selector with the selected service's optional field. */
 #region-field[hidden],#extra-field[hidden]{display:none!important}
+
+#stars-field[hidden]{display:none!important}
+#amount-hint{min-height:3em}
