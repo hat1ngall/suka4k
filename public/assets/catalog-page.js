@@ -1,4 +1,5 @@
 import {catalog,allProducts} from './catalog-data.js';
+import {flagForRegion} from './region-flags.js';
 const $=selector=>document.querySelector(selector);
 const params=new URLSearchParams(location.search),name=params.get('product')||'',raw=params.get('step')||'';
 const validSteps=raw===''||/^\d+(?:\.\d+)*$/.test(raw);
@@ -30,6 +31,6 @@ else{
  }else{
    $('#page-title').textContent=current===root?label:current.label;
    $('#subtitle').textContent=current===root?(root.heading||'Выбери вариант'):'Выбери подходящий вариант';
-   const options=$('#options');current.children.forEach((option,index)=>{const link=document.createElement('a');link.className='option'+(option.pending?' pending':'');link.href=url([...indexes,index]);const text=document.createElement('span');text.className='option-title';text.textContent=option.label;const action=document.createElement('span');action.className='option-action';const actionLabel=document.createElement('span');actionLabel.textContent=option.pending?'Скоро':option.children?'Выбрать':'Подробнее';const arrow=document.createElement('span');arrow.className='option-arrow';arrow.textContent='→';arrow.setAttribute('aria-hidden','true');action.append(actionLabel,arrow);link.append(text,action);options.append(link)})
+   const options=$('#options');current.children.forEach((option,index)=>{const link=document.createElement('a');link.className='option'+(option.pending?' pending':'');link.href=url([...indexes,index]);const heading=document.createElement('span');heading.className='option-heading';const flag=flagForRegion(option.label);if(flag){const image=document.createElement('img');image.className='region-flag';image.src='/assets/flags/'+flag+'.svg';image.alt='';image.setAttribute('aria-hidden','true');image.width=36;image.height=27;heading.append(image)}const text=document.createElement('span');text.className='option-title';text.textContent=option.label;heading.append(text);const action=document.createElement('span');action.className='option-action';const actionLabel=document.createElement('span');actionLabel.textContent=option.pending?'Скоро':option.children?'Выбрать':'Подробнее';const arrow=document.createElement('span');arrow.className='option-arrow';arrow.textContent='→';arrow.setAttribute('aria-hidden','true');action.append(actionLabel,arrow);link.append(heading,action);options.append(link)})
  }
 }
