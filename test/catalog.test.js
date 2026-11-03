@@ -21,3 +21,16 @@ test('catalog contains the specified regional and product selection paths',()=>{
  assert.equal(catalog['Free Fire'].children[1].children.length,10);
  for(const name of Object.keys(catalog))assert.ok(allProducts.includes(name),name);
 });
+
+test('requested catalog removals stay scoped to their categories',()=>{
+ const battle=choice(catalog['Battle.net'],'Подарочные карты');
+ assert.equal(choice(battle,'Канада'),undefined);
+ assert.equal(choice(battle,'Мексика'),undefined);
+ assert.ok(choice(choice(catalog['Battle.net'],'World of Warcraft 60 Days Time Card'),'Канада'));
+ assert.equal(choice(catalog['Steam Gifts'],'Польша'),undefined);
+ assert.equal(choice(catalog['Steam Gifts'],'Великобритания'),undefined);
+ assert.ok(choice(catalog.Steam,'Польша'));
+ assert.equal(choice(choice(catalog.Nintendo,'Подписка'),'Чехия'),undefined);
+ assert.equal(choice(catalog['Electronic Arts'],'The Sims 4'),undefined);
+ assert.equal(choice(choice(catalog['Electronic Arts'],'EA Sports FC'),'EA Sports FC 24'),undefined);
+});

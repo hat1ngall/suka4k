@@ -14,3 +14,11 @@ html[data-theme="dark"] .theme-toggle:before,html[data-theme="dark"] .secondary-
 .support-dialog h2{font-family:Unbounded,Manrope,sans-serif;font-size:22px;margin:0 0 12px}.support-dialog p{line-height:1.6}.support-close{float:right;background:transparent;border:0;color:inherit;font-size:26px;line-height:1;cursor:pointer}.support-socials{display:flex;gap:10px;flex-wrap:wrap}.support-socials span{padding:10px 16px;border:1px solid #e7ccdc;border-radius:20px}
 html[data-theme="dark"] .support-dialog{background:#17121b;color:#fff0f9;border-color:#4e3b4b;box-shadow:7px 8px 0 #09070a}html[data-theme="dark"] .support-socials span{border-color:#4e3b4b}
 @media(max-width:760px){.topbar .nav{overflow-x:auto}.secondary-page .topbar .nav{overflow:visible;gap:20px}.support-dialog{padding:22px}}
+/* Shared hover colour and accessible account contrast. */
+.topbar .nav a:hover,.topbar .nav .support-link:hover,.topbar .nav .nav-link:hover,html[data-theme="dark"] .topbar .nav a:hover,html[data-theme="dark"] .topbar .nav .support-link:hover{color:#e32f81!important}
+html[data-theme="dark"] .nav-right .donut-button{color:#fff}
+.donut-feature{width:clamp(72px,10vw,110px)!important;height:clamp(72px,10vw,110px)!important;margin-left:12px}
+.auth-brand-panel{background:#fffafd;color:#2c1736}.auth-brand-panel .auth-logo,.auth-brand-panel strong{color:#d52a78}
+.auth-content{background:#fffafd;color:#2c1736}.auth-content h2{color:#d52a78}.auth-subtitle,.auth-hint,.auth-legal,.auth-switch,.auth-recovery{color:#362332}
+html[data-theme="dark"] .auth-brand-panel,html[data-theme="dark"] .auth-content{background:#17121b;color:#fff0f9}
+html[data-theme="dark"] .auth-brand-panel .auth-logo,html[data-theme="dark"] .auth-brand-panel strong,html[data-theme="dark"] .auth-content h2{color:#ef62a1}
