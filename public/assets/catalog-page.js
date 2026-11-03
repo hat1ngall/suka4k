@@ -1,11 +1,22 @@
-import {catalog,allProducts} from './catalog-data.js?v=3';
+import {catalog,allProducts} from './catalog-data.js?v=4';
+import {priceLists} from './price-list.js?v=1';
 import {flagForRegion} from './region-flags.js';
 const $=selector=>document.querySelector(selector);
 const params=new URLSearchParams(location.search),name=params.get('product')||'',raw=params.get('step')||'';
 const validSteps=raw===''||/^\d+(?:\.\d+)*$/.test(raw);
 const indexes=validSteps&&raw?raw.split('.').map(Number):[];
 const title=allProducts.includes(name)?name:'';
-const root=catalog[name]||{title:name,children:[]};
+const root=JSON.parse(JSON.stringify(catalog[name]||{title:name,children:[]}));
+if(priceLists[name]){
+ root.children ||= [];
+ for(const [region,entries] of Object.entries(priceLists[name])){
+  const target=root.children.find(child=>child.label.toLocaleLowerCase('ru')===region.toLocaleLowerCase('ru'));
+  if(!target)continue;
+  if(target.pending){delete target.pending;target.children=entries.map(entry=>({...entry}));continue}
+  if(target.children){for(const child of target.children){if(child.children||child.pending)continue;const match=child.label.match(/^(\d+)\s*(?:В-баксов|VP)$/i);if(!match)continue;const candidates=entries.filter(entry=>new RegExp('(^|\\D)'+match[1]+'(?!\\d)').test(entry.label));if(candidates.length===1)child.priceRub=candidates[0].priceRub}}
+ }
+ root.children.push({label:'Товары и цены',children:Object.entries(priceLists[name]).map(([label,children])=>({label,children}))})
+}
 const label=root.title||name;
 const gameNames=new Set(['Fortnite','Valorant','PUBG Mobile','Zenless Zone Zero','Marvel Rivals','Roblox','Standoff 2','Apex Legends','Free Fire','Honkai: Star Rail']);
 const subscriptionNames=new Set(['Netflix','ExitLag','Spotify']);
@@ -31,11 +42,11 @@ else{
    $('#page-title').textContent=current===root?label:current.label;
    $('#subtitle').textContent=current.pending||current===root?'Этот раздел ещё готовится.':'Выбранный товар';
    const empty=$('#empty');empty.hidden=false;const strong=document.createElement('strong'),description=document.createElement('p');
-   if(current.pending||current===root){strong.textContent='Варианты скоро появятся';description.textContent='Список товаров для этого раздела ещё дополняется.'}else{strong.textContent=current.label;description.textContent='Цена и оформление заказа пока не добавлены.'}
+   if(current.pending||current===root){strong.textContent='Варианты скоро появятся';description.textContent='Список товаров для этого раздела ещё дополняется.'}else{strong.textContent=current.label;description.textContent=current.priceRub!=null?'Цена: '+Number(current.priceRub).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽. Оформление заказа пока не подключено.':'Цена и оформление заказа пока не добавлены.'}
    empty.append(strong,description);const link=document.createElement('a');link.href=back.href;link.textContent='Вернуться к выбору';empty.append(link)
  }else{
    $('#page-title').textContent=current===root?label:current.label;
    $('#subtitle').textContent='';
-   const options=$('#options');current.children.forEach((option,index)=>{const link=document.createElement('a');link.className='option'+(option.pending?' pending':'');link.href=url([...indexes,index]);const visual=document.createElement('span');visual.className='option-visual';const heading=document.createElement('span');heading.className='option-heading';const flag=flagForRegion(option.label);if(flag){const image=document.createElement('img');image.className='region-flag';image.src='/assets/flags/'+flag+'.svg';image.alt='';image.setAttribute('aria-hidden','true');image.width=36;image.height=27;visual.append(image)}else{const image=document.createElement('img');image.className='option-mascot';image.src='/assets/hero-mascot-cutout.png';image.alt='';image.loading='lazy';visual.append(image)}const text=document.createElement('span');text.className='option-title';text.textContent=option.label;heading.append(text);const action=document.createElement('span');action.className='option-action';const actionLabel=document.createElement('span');actionLabel.textContent=option.pending?'Скоро':option.children?'Выбрать':'Подробнее';const arrow=document.createElement('span');arrow.className='option-arrow';arrow.textContent='→';arrow.setAttribute('aria-hidden','true');action.append(actionLabel,arrow);link.append(visual,heading,action);options.append(link)})
+   const options=$('#options');current.children.forEach((option,index)=>{const link=document.createElement('a');link.className='option'+(option.pending?' pending':'');link.href=url([...indexes,index]);const visual=document.createElement('span');visual.className='option-visual';const heading=document.createElement('span');heading.className='option-heading';const flag=flagForRegion(option.label);if(flag){const image=document.createElement('img');image.className='region-flag';image.src='/assets/flags/'+flag+'.svg';image.alt='';image.setAttribute('aria-hidden','true');image.width=36;image.height=27;visual.append(image)}else{const image=document.createElement('img');image.className='option-mascot';image.src='/assets/hero-mascot-cutout.png';image.alt='';image.loading='lazy';visual.append(image)}const text=document.createElement('span');text.className='option-title';text.textContent=option.label;heading.append(text);if(option.priceRub!=null){const price=document.createElement('span');price.className='option-price';price.textContent=Number(option.priceRub).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽';heading.append(price)}const action=document.createElement('span');action.className='option-action';const actionLabel=document.createElement('span');actionLabel.textContent=option.pending?'Скоро':option.children?'Выбрать':'Подробнее';const arrow=document.createElement('span');arrow.className='option-arrow';arrow.textContent='→';arrow.setAttribute('aria-hidden','true');action.append(actionLabel,arrow);link.append(visual,heading,action);options.append(link)})
  }
 }
