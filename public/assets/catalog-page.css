@@ -4,3 +4,28 @@
 
 .option-heading{display:flex;align-items:center;gap:12px;min-width:0}.region-flag{width:36px;height:27px;object-fit:cover;flex:none;border:1px solid #705e6a55;border-radius:4px;box-shadow:0 2px 5px #24101d22}@media(max-width:760px){.option-heading{gap:9px}.region-flag{width:32px;height:24px}}
 @media(max-width:480px){.option-heading{display:block}.option-heading .region-flag{display:block;margin:0 0 8px}.option-title{overflow-wrap:normal;word-break:normal;hyphens:auto}}
+/* Product selection: a compact mascot banner and clear, tappable choices. */
+.catalog-panel{padding:0;border:0;background:transparent;box-shadow:none;min-height:0}
+.back-link{position:relative;z-index:2;margin:0 0 16px;font-size:14px}
+.page-header{position:relative;overflow:hidden;isolation:isolate;min-height:240px;margin:0 0 24px;padding:30px 34px;border:1px solid var(--line);border-radius:28px;background:#f5cedf}
+html[data-theme=dark] .page-header{background:#352038}
+.page-header-copy{position:relative;z-index:1;max-width:65%}
+.page-header .eyebrow{margin-bottom:12px}
+.product-name{margin:0 0 10px;font-size:clamp(16px,2vw,23px);line-height:1.25;font-weight:900;overflow-wrap:anywhere}
+.page-header h1{font-size:clamp(25px,3vw,42px);line-height:1.1;letter-spacing:-1.5px}
+.page-header h1 span{color:var(--pink)}
+.page-header .subtitle{color:var(--ink);font-weight:600;margin-top:12px}
+.catalog-mascot{position:absolute;z-index:0;right:1%;bottom:-18%;width:min(42%,340px);height:120%;object-fit:contain;object-position:right bottom;pointer-events:none}
+.options{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.option{min-height:112px;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:18px;padding:16px;border-radius:20px;background:var(--paper)}
+.option-visual{display:flex;align-items:center;justify-content:center;flex:0 0 76px;align-self:stretch;border-right:1px solid var(--line);padding-right:16px}
+.option-visual .region-flag{width:48px;height:36px;margin:0;object-fit:cover}
+.option-mascot{width:64px;height:64px;object-fit:contain}
+.option-heading{display:flex;flex:1;min-width:0}
+.option-title{font-size:16px}
+.option-action{flex:none;align-self:center}
+.option-action span:first-child{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.option-arrow{font-size:24px;line-height:1}
+@media(max-width:900px){.options{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.page-header{min-height:215px;padding:24px 20px;border-radius:24px}.page-header-copy{max-width:65%}.page-header h1{font-size:clamp(23px,6vw,34px);letter-spacing:-1px}.product-name{font-size:16px}.catalog-mascot{width:46%;height:105%;bottom:-8%;right:-3%}.options{grid-template-columns:1fr;gap:12px}.option{min-height:100px;padding:14px 16px}.option-heading{display:flex}.option-title{font-size:15px}.option-visual{flex-basis:74px}.option-mascot{height:60px;width:60px}}
+.page-header h1 span{display:inline-block;margin-left:.12em}
