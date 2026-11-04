@@ -22,3 +22,11 @@ html[data-theme="dark"] .nav-right .donut-button{color:#fff}
 .auth-content{background:#fffafd;color:#2c1736}.auth-content h2{color:#d52a78}.auth-subtitle,.auth-hint,.auth-legal,.auth-switch,.auth-recovery{color:#362332}
 html[data-theme="dark"] .auth-brand-panel,html[data-theme="dark"] .auth-content{background:#17121b;color:#fff0f9}
 html[data-theme="dark"] .auth-brand-panel .auth-logo,html[data-theme="dark"] .auth-brand-panel strong,html[data-theme="dark"] .auth-content h2{color:#ef62a1}
+/* Consistent navigation and proportional donut details. */
+.topbar .nav{font-size:14px}.topbar .nav a,.topbar .nav button{font-weight:800}
+.donut-icon,.page-donuts .donut-icon{width:23px!important;height:23px!important}
+.donut-feature{width:clamp(50px,6vw,68px)!important;height:clamp(50px,6vw,68px)!important}
+.secondary-page .catalog h2{font-size:clamp(28px,4vw,49px);line-height:1.12}
+.nav-right .pill,.catalog-cart-button,.donuts,.page-donuts{font-weight:900}
+.nav-right .donut-button{color:#2c1736}html[data-theme="dark"] .nav-right .donut-button{color:white}
+html:not([data-theme="dark"]) .topbar .donuts,html:not([data-theme="dark"]) .topbar .page-donuts{color:#2c1736}

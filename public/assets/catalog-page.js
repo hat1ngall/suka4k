@@ -1,6 +1,8 @@
 import {catalog,allProducts} from './catalog-data.js?v=4';
 import {priceLists} from './price-list.js?v=1';
 import {buildPricedCatalog} from './catalog-priced.js?v=1';
+import {displayProductName} from './catalog-product.js?v=1';
+import {createCatalogCart} from './catalog-cart.js?v=1';
 import {flagForRegion} from './region-flags.js';
 const $=selector=>document.querySelector(selector);
 const params=new URLSearchParams(location.search),name=params.get('product')||'',raw=params.get('step')||'';
@@ -16,6 +18,7 @@ $('.page-category-icon').src='/assets/category-'+categoryIcon+'.svg';
 function url(path){const query=new URLSearchParams({product:name});if(path.length)query.set('step',path.join('.'));return '/catalog.html?'+query.toString()}
 function addCrumb(label,href,current=false){const container=$('#breadcrumbs');if(container.childNodes.length){const separator=document.createElement('span');separator.className='separator';separator.textContent='/';separator.setAttribute('aria-hidden','true');container.append(separator)}const el=document.createElement(href?'a':'span');el.textContent=label;if(href)el.href=href;if(current)el.setAttribute('aria-current','page');container.append(el)}
 function setupTheme(){const button=$('.theme-toggle');const sync=()=>{const dark=document.documentElement.dataset.theme==='dark';button.setAttribute('aria-pressed',String(dark));button.setAttribute('aria-label',dark?'Включить светлую тему':'Включить тёмную тему')};sync();button.addEventListener('click',()=>{const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=theme;try{localStorage.setItem('theme',theme)}catch{}sync()})}
+const addToCart=createCatalogCart();
 setupTheme();fetch('/api/auth/me',{credentials:'same-origin'}).then(response=>response.ok?response.json():null).then(data=>{if(data?.user)$('#balance').textContent=Number(data.user.bonus_balance||0).toLocaleString('ru-RU')}).catch(()=>{});
 addCrumb('Каталог','/home#catalog');
 if(!title){document.title='Раздел не найден — mupple';$('#page-title').textContent='Раздел не найден';$('#subtitle').textContent='Вернись в каталог и выбери товар.';$('#empty').hidden=false;$('#empty').textContent='Такого раздела нет.'}
@@ -38,6 +41,21 @@ else{
  }else{
    $('#page-title').textContent=current===root?label:current.label;
    $('#subtitle').textContent='';
-   const options=$('#options');current.children.forEach((option,index)=>{const link=document.createElement('a');link.className='option'+(option.pending?' pending':'');link.href=url([...indexes,index]);const visual=document.createElement('span');visual.className='option-visual';const heading=document.createElement('span');heading.className='option-heading';const flag=flagForRegion(option.label);if(flag){const image=document.createElement('img');image.className='region-flag';image.src='/assets/flags/'+flag+'.svg';image.alt='';image.setAttribute('aria-hidden','true');image.width=36;image.height=27;visual.append(image)}else{const image=document.createElement('img');image.className='option-mascot';image.src='/assets/hero-mascot-cutout.png';image.alt='';image.loading='lazy';visual.append(image)}const text=document.createElement('span');text.className='option-title';text.textContent=option.label;heading.append(text);if(option.priceRub!=null){const price=document.createElement('span');price.className='option-price';price.textContent=Number(option.priceRub).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽';heading.append(price)}const action=document.createElement('span');action.className='option-action';const actionLabel=document.createElement('span');actionLabel.textContent=option.pending?'Скоро':option.children?'Выбрать':'Подробнее';const arrow=document.createElement('span');arrow.className='option-arrow';arrow.textContent='→';arrow.setAttribute('aria-hidden','true');action.append(actionLabel,arrow);link.append(visual,heading,action);options.append(link)})
+   const options=$('#options');
+   const scenes=['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','Zenless Zone Zero','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail'];
+   const scene=Math.max(0,scenes.indexOf(name));
+   current.children.forEach((option,index)=>{
+    if(!option.pending&&!option.children){
+     const card=document.createElement('article');card.className='catalog-product';
+     const picture=document.createElement('div');picture.className='catalog-product-art';picture.setAttribute('aria-hidden','true');
+     picture.style.setProperty('--image',`url(/assets/catalog-cinematic-${Math.floor(scene/6)+1}.png)`);picture.style.setProperty('--x',`${(scene%2)*100}%`);picture.style.setProperty('--y',`${Math.floor((scene%6)/2)*50}%`);picture.style.setProperty('--ratio',Math.floor(scene/6)===1?'2.25':'2.665');
+     const content=document.createElement('div');content.className='catalog-product-content';const productTitle=document.createElement('h2');const productName=displayProductName(name,option,ancestors.map(x=>x.label));productTitle.textContent=productName;
+     const price=document.createElement('p');price.className='catalog-product-price';price.textContent=option.priceRub!=null?Number(option.priceRub).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽':'Цена уточняется';
+     const add=document.createElement('button');add.type='button';add.className='catalog-product-add';add.textContent=option.priceRub!=null?'В корзину':'Скоро';add.disabled=option.priceRub==null;
+     add.addEventListener('click',async()=>{add.disabled=true;try{await addToCart({platform:name,productName,region:ancestors.map(x=>x.label).join(' · '),login:'',currency:'RUB',amount:Number(option.priceRub),sourceRow:option.sourceRow||null})}finally{add.disabled=false}});
+     content.append(productTitle,price,add);card.append(picture,content);options.append(card);return;
+    }
+    const link=document.createElement('a');link.className='option'+(option.pending?' pending':'');link.href=url([...indexes,index]);const visual=document.createElement('span');visual.className='option-visual';const heading=document.createElement('span');heading.className='option-heading';const flag=flagForRegion(option.label);if(flag){const image=document.createElement('img');image.className='region-flag';image.src='/assets/flags/'+flag+'.svg';image.alt='';image.setAttribute('aria-hidden','true');image.width=36;image.height=27;visual.append(image)}else{const image=document.createElement('img');image.className='option-mascot';image.src='/assets/hero-mascot-cutout.png';image.alt='';image.loading='lazy';visual.append(image)}const text=document.createElement('span');text.className='option-title';text.textContent=option.label;heading.append(text);const action=document.createElement('span');action.className='option-action';const actionLabel=document.createElement('span');actionLabel.textContent=option.pending?'Скоро':'Выбрать';const arrow=document.createElement('span');arrow.className='option-arrow';arrow.textContent='→';arrow.setAttribute('aria-hidden','true');action.append(actionLabel,arrow);link.append(visual,heading,action);options.append(link);
+   });
  }
 }

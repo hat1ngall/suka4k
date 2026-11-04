@@ -3,3 +3,8 @@
 .chart-controls{display:flex;gap:8px;margin:14px 0}.chart-controls button{background:var(--soft);color:var(--ink);border:1px solid var(--line);font-size:12px;padding:8px 13px}.chart-controls button.active{background:var(--pink);border-color:var(--pink);color:white}.sales-chart{display:flex;align-items:flex-end;gap:5px;height:220px;overflow-x:auto;border-bottom:1px solid var(--line);padding:10px 4px 0}.chart-column{flex:1;min-width:18px;height:100%;display:flex;flex-direction:column;align-items:center}.chart-bars{flex:1;display:flex;align-items:flex-end;justify-content:center;gap:3px;width:100%}.chart-bar{width:min(14px,42%);border-radius:4px 4px 0 0;background:#e7368b}.chart-bar.bonus{background:#ac79d1}.chart-column small{font-size:9px;color:var(--muted);padding:6px 0}.sales-chart+.muted{font-size:11px}.chart .notice{margin-top:15px}
 /* Keep the admin wordmark in the same brand pink as the storefront. */
 .brand{color:#e32f81}
+/* Clearer controls and tables on desktop and phones. */
+.tabs button{font-weight:850;padding:12px 18px}.section-head h2{font-size:clamp(20px,2vw,25px)}.table-wrap{padding:12px 18px}th{padding-top:18px;padding-bottom:18px}td{font-size:14px}.actions button{min-height:40px}.price-input{font-weight:700}.heading p{max-width:650px}.bar .home-link:hover{color:var(--pink)}
+@media(max-width:600px){main{padding:24px 4% 50px}.tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px}.tabs button{white-space:nowrap}.table-wrap{padding:8px 12px}.section-head{flex-wrap:wrap}}
+
+.admin-search{display:block;max-width:360px;margin:0 0 12px;color:var(--muted)}.admin-search input{display:block;margin-top:7px;background:var(--card)}
