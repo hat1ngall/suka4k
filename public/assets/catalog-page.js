@@ -11,10 +11,9 @@ const indexes=validSteps&&raw?raw.split('.').map(Number):[];
 const title=allProducts.includes(name)?name:'';
 const root=buildPricedCatalog(name,catalog[name],priceLists);
 const label=root.title||name;
-const gameNames=new Set(['Fortnite','Valorant','PUBG Mobile','Zenless Zone Zero','Marvel Rivals','Roblox','Standoff 2','Apex Legends','Free Fire','Honkai: Star Rail']);
-const subscriptionNames=new Set(['Netflix','ExitLag','Spotify']);
-const categoryIcon=gameNames.has(name)?'game':subscriptionNames.has(name)?'subscription':'topup';
-$('.page-category-icon').src='/assets/category-'+categoryIcon+'.svg';
+const sceneNames=['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','Zenless Zone Zero','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail'];
+const sceneIndex=sceneNames.indexOf(name),banner=$('.banner-scene');
+if(sceneIndex>=0){banner.style.setProperty('--image',`url(/assets/catalog-cinematic-${Math.floor(sceneIndex/6)+1}.png)`);banner.style.setProperty('--x',`${(sceneIndex%2)*100}%`);banner.style.setProperty('--y',`${Math.floor((sceneIndex%6)/2)*50}%`);banner.style.setProperty('--ratio',Math.floor(sceneIndex/6)===1?'2.25':'2.665')}else{banner.hidden=true}
 function url(path){const query=new URLSearchParams({product:name});if(path.length)query.set('step',path.join('.'));return '/catalog.html?'+query.toString()}
 function addCrumb(label,href,current=false){const container=$('#breadcrumbs');if(container.childNodes.length){const separator=document.createElement('span');separator.className='separator';separator.textContent='/';separator.setAttribute('aria-hidden','true');container.append(separator)}const el=document.createElement(href?'a':'span');el.textContent=label;if(href)el.href=href;if(current)el.setAttribute('aria-current','page');container.append(el)}
 function setupTheme(){const button=$('.theme-toggle');const sync=()=>{const dark=document.documentElement.dataset.theme==='dark';button.setAttribute('aria-pressed',String(dark));button.setAttribute('aria-label',dark?'Включить светлую тему':'Включить тёмную тему')};sync();button.addEventListener('click',()=>{const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=theme;try{localStorage.setItem('theme',theme)}catch{}sync()})}
@@ -41,9 +40,9 @@ else{
  }else{
    $('#page-title').textContent=current===root?label:current.label;
    $('#subtitle').textContent='';
+   $('.banner-cta').hidden=false;
    const options=$('#options');
-   const scenes=['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','Zenless Zone Zero','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail'];
-   const scene=Math.max(0,scenes.indexOf(name));
+   const scene=Math.max(0,sceneIndex);
    current.children.forEach((option,index)=>{
     if(!option.pending&&!option.children){
      const card=document.createElement('article');card.className='catalog-product';
