@@ -3,6 +3,8 @@ import {priceLists} from './price-list.js?v=1';
 import {buildPricedCatalog} from './catalog-priced.js?v=1';
 import {displayProductName} from './catalog-product.js?v=1';
 import {createCatalogCart} from './catalog-cart.js?v=1';
+import {getActivationGuide} from './activation-guides.js?v=1';
+import {isAutoDelivery} from './auto-topup.js?v=1';
 import {flagForRegion} from './region-flags.js';
 const $=selector=>document.querySelector(selector);
 const params=new URLSearchParams(location.search),name=params.get('product')||'',raw=params.get('step')||'';
@@ -12,8 +14,8 @@ const title=allProducts.includes(name)?name:'';
 const root=buildPricedCatalog(name,catalog[name],priceLists);
 const label=root.title||name;
 const sceneNames=['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','Zenless Zone Zero','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail'];
-const sceneIndex=sceneNames.indexOf(name),banner=$('.banner-scene');
-if(sceneIndex>=0){banner.style.setProperty('--image',`url(/assets/catalog-cinematic-${Math.floor(sceneIndex/6)+1}.png)`);banner.style.setProperty('--x',`${(sceneIndex%2)*100}%`);banner.style.setProperty('--y',`${Math.floor((sceneIndex%6)/2)*50}%`);banner.style.setProperty('--ratio',Math.floor(sceneIndex/6)===1?'2.25':'2.665')}else{banner.hidden=true}
+const sceneIndex=sceneNames.indexOf(name==='Steam Auto-Regs Games'?'Steam':name),banner=$('.banner-scene');
+if(sceneIndex>=0){banner.style.setProperty('--image',`url(/assets/banner-mascots-${Math.floor(sceneIndex/6)+1}.png)`);banner.style.setProperty('--x',`${(sceneIndex%2)*100}%`);banner.style.setProperty('--y',`${Math.floor((sceneIndex%6)/2)*50}%`);banner.style.setProperty('--ratio',Math.floor(sceneIndex/6)===1?'2.25':'2.665')}else{banner.hidden=true}
 function url(path){const query=new URLSearchParams({product:name});if(path.length)query.set('step',path.join('.'));return '/catalog.html?'+query.toString()}
 function addCrumb(label,href,current=false){const container=$('#breadcrumbs');if(container.childNodes.length){const separator=document.createElement('span');separator.className='separator';separator.textContent='/';separator.setAttribute('aria-hidden','true');container.append(separator)}const el=document.createElement(href?'a':'span');el.textContent=label;if(href)el.href=href;if(current)el.setAttribute('aria-current','page');container.append(el)}
 function setupTheme(){const button=$('.theme-toggle');const sync=()=>{const dark=document.documentElement.dataset.theme==='dark';button.setAttribute('aria-pressed',String(dark));button.setAttribute('aria-label',dark?'Включить светлую тему':'Включить тёмную тему')};sync();button.addEventListener('click',()=>{const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=theme;try{localStorage.setItem('theme',theme)}catch{}sync()})}
@@ -28,7 +30,7 @@ else{
  for(const index of indexes){if(!current.children||!Number.isSafeInteger(index)||!current.children[index]){valid=false;break}current=current.children[index];ancestors.push(current)}
  addCrumb(label,indexes.length?url([]):null,indexes.length===0);
  ancestors.forEach((entry,i)=>addCrumb(entry.label,i<ancestors.length-1?url(indexes.slice(0,i+1)):null,i===ancestors.length-1));
- const details=document.createElement('details');details.className='activation-guide';const summary=document.createElement('summary');summary.textContent='Инструкция по активации';const guide=document.createElement('p');guide.textContent='Инструкция для этого товара появится, когда будет подключено оформление заказа. Перед покупкой проверьте платформу и регион аккаунта.';details.append(summary,guide);$('.catalog-panel').append(details);
+ const steps=getActivationGuide(name,ancestors.map(x=>x.label));if(steps){const details=document.createElement('details');details.className='activation-guide';const summary=document.createElement('summary');summary.textContent='Инструкция по активации';const list=document.createElement('ol');for(const step of steps){const item=document.createElement('li');item.textContent=step;list.append(item)}details.append(summary,list);$('.catalog-panel').append(details);}
  const back=$('#back-link');back.href=indexes.length?url(indexes.slice(0,-1)):'/home#catalog';back.textContent='← Назад';$('#footer-back').href=back.href;
  if(!valid){$('#page-title').textContent='Раздел не найден';$('#subtitle').textContent='Возможно, ссылка устарела.';$('#empty').hidden=false;$('#empty').textContent='Вернись на предыдущую страницу и выбери вариант.'}
  else if(current.pending||!current.children?.length){
@@ -51,7 +53,8 @@ else{
      const content=document.createElement('div');content.className='catalog-product-content';const productTitle=document.createElement('h2');const productName=displayProductName(name,option,ancestors.map(x=>x.label));productTitle.textContent=productName;
      const price=document.createElement('p');price.className='catalog-product-price';price.textContent=option.priceRub!=null?Number(option.priceRub).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽':'Цена уточняется';
      const add=document.createElement('button');add.type='button';add.className='catalog-product-add';add.textContent=option.priceRub!=null?'В корзину':'Скоро';add.disabled=option.priceRub==null;
-     add.addEventListener('click',async()=>{add.disabled=true;try{await addToCart({platform:name,productName,region:ancestors.map(x=>x.label).join(' · '),login:'',currency:'RUB',amount:Number(option.priceRub),sourceRow:option.sourceRow||null})}finally{add.disabled=false}});
+     const auto=isAutoDelivery(name,ancestors.map(x=>x.label));if(auto&&option.priceRub!=null)add.textContent='К пополнению';
+     add.addEventListener('click',async()=>{if(auto){if(option.sourceRow)location.href='/home?'+new URLSearchParams({platform:name,item:String(option.sourceRow)})+'#balance';return}add.disabled=true;try{await addToCart({platform:name,productName,region:ancestors.map(x=>x.label).join(' · '),login:'',currency:'RUB',amount:Number(option.priceRub),sourceRow:option.sourceRow||null})}finally{add.disabled=false}});
      content.append(productTitle,price,add);card.append(picture,content);options.append(card);return;
     }
     const link=document.createElement('a');link.className='option'+(option.pending?' pending':'');link.href=url([...indexes,index]);const visual=document.createElement('span');visual.className='option-visual';const heading=document.createElement('span');heading.className='option-heading';const flag=flagForRegion(option.label);if(flag){const image=document.createElement('img');image.className='region-flag';image.src='/assets/flags/'+flag+'.svg';image.alt='';image.setAttribute('aria-hidden','true');image.width=36;image.height=27;visual.append(image)}else{const image=document.createElement('img');image.className='option-mascot';image.src='/assets/hero-mascot-cutout.png';image.alt='';image.loading='lazy';visual.append(image)}const text=document.createElement('span');text.className='option-title';text.textContent=option.label;heading.append(text);const action=document.createElement('span');action.className='option-action';const actionLabel=document.createElement('span');actionLabel.textContent=option.pending?'Скоро':'Выбрать';const arrow=document.createElement('span');arrow.className='option-arrow';arrow.textContent='→';arrow.setAttribute('aria-hidden','true');action.append(actionLabel,arrow);link.append(visual,heading,action);options.append(link);

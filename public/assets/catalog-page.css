@@ -56,3 +56,19 @@ html[data-theme=dark] .page-header{--banner-bg:#352038;background:var(--banner-b
 @media(max-width:600px){.page-header{min-height:230px}.page-header-copy{max-width:67%}.page-header h1{font-size:clamp(22px,6vw,32px)}.banner-scene{width:58%}.banner-scene:after{background:linear-gradient(90deg,var(--banner-bg),transparent 65%)}.banner-cta{margin-top:18px;padding:11px 16px;font-size:12px;gap:14px}}
 @media(max-width:600px){.banner-scene:before{top:auto;bottom:0;height:75%}.banner-scene:after{background:linear-gradient(90deg,var(--banner-bg),transparent 48%)}}
 @media(max-width:600px){.banner-scene:before{-webkit-mask-image:linear-gradient(to bottom,transparent,#000 16%);mask-image:linear-gradient(to bottom,transparent,#000 16%)}}
+/* A solid pink banner and isolated mascot artwork in both themes. */
+.page-header,html[data-theme=dark] .page-header{--banner-bg:#f6d3e3;background:#f6d3e3;color:#2c1736;overflow:visible}
+.page-header-copy{color:#2c1736}.page-header .subtitle{color:#2c1736}
+.banner-scene{inset:-18px 0 0 auto;width:50%;overflow:hidden}
+.banner-scene:before{top:0;bottom:auto;height:100%;background-size:200% 300%;-webkit-mask-image:none;mask-image:none}
+.banner-scene:after{display:none}
+@media(max-width:600px){.page-header{min-height:220px;padding:23px 19px}.page-header-copy{max-width:68%}.page-header h1{font-size:clamp(21px,6vw,30px)}.banner-scene{top:-14px;bottom:0;right:0;width:50%}.banner-scene:before{top:0;bottom:auto;height:100%;-webkit-mask-image:none;mask-image:none}}
+@media(max-width:600px){.banner-scene{width:53%;top:-15px}.banner-scene:before{top:auto;bottom:0;height:70%}}
+@media(max-width:600px){.page-header-copy{max-width:52%;padding-right:0}.page-header h1{font-size:clamp(20px,5.6vw,27px)}.page-header h1 span{margin-left:0}}
+@media(max-width:600px){.banner-scene:before{height:62%}}
+@media(max-width:360px){.topbar{gap:5px}.topbar .brand{font-size:21px;letter-spacing:-1.8px}.topbar .theme-toggle{width:60px!important;min-width:60px!important;max-width:60px!important}.topbar .theme-toggle:before{transform:translateX(0)}html[data-theme=dark] .topbar .theme-toggle:before{transform:translateX(26px)}.catalog-cart-button{font-size:9px;padding:8px 6px}.catalog-cart-button+.donuts{font-size:9px;padding:0 6px}}
+@media(max-width:360px){.topbar{display:grid;grid-template-columns:minmax(0,1fr) auto auto}.topbar .brand-group{min-width:0}.topbar .nav{grid-column:1/-1;order:0}.topbar .catalog-cart-button{margin:0}.topbar .donuts{margin:0}}
+@media(max-width:360px){.topbar .brand-group{order:0}.topbar .catalog-cart-button{order:1}.topbar .donuts{order:2}.topbar .nav{order:3}}
+@media(max-width:360px){.topbar{grid-template-columns:minmax(0,1fr) auto}.topbar .brand-group{grid-column:1;grid-row:1}.topbar .donuts{grid-column:2;grid-row:1}.topbar .nav{grid-column:1;grid-row:2}.topbar .catalog-cart-button{grid-column:2;grid-row:2;justify-self:end}}
+@media(max-width:360px){.topbar .nav{font-size:11px;gap:8px;overflow:visible}}
+.activation-guide ol{padding-left:22px;line-height:1.6}.activation-guide li+li{margin-top:8px}

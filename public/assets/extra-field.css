@@ -3,3 +3,5 @@
 
 #stars-field[hidden]{display:none!important}
 #amount-hint{min-height:3em}
+
+#auto-product-field[hidden],.amounts[hidden]{display:none!important}

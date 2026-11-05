@@ -37,5 +37,7 @@ const catalog={
  'Free Fire':{heading:'Выбери способ пополнения',children:[branch('Коды · Global',items(['100+10 Diamonds','210+21 Diamonds','530+53 Diamonds','1080+108 Diamonds','2200+220 Diamonds'])),branch('Автопополнение · СНГ',items(['Free Fire CIS: Newbie Bundle','Free Fire CIS: Level Up Package 6','Free Fire CIS: Weekly Lite','Free Fire CIS: Level Up Package 20','Free Fire CIS: Level Up Package 15','Free Fire CIS: Level Up Package 25','Free Fire CIS: Level Up Package 10','Free Fire CIS: Level Up Package 30','Free Fire CIS: Weekly Membership','Free Fire CIS: Monthly Membership']))]}
 };
 catalog['Steam Gifts']={...catalog.Steam,children:catalog.Steam.children.filter(region=>!['Польша','Великобритания'].includes(region.label))};
-const allProducts=['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','Zenless Zone Zero','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail'];
+catalog.Steam={title:'Steam Auto-Regs Games',children:[]};
+catalog['Steam Auto-Regs Games']=catalog.Steam;
+const allProducts=['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','Zenless Zone Zero','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Steam Auto-Regs Games','Honkai: Star Rail'];
 export {catalog,allProducts};

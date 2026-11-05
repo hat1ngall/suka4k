@@ -4,7 +4,7 @@ import {catalog,allProducts} from '../public/assets/catalog-data.js';
 const labels=xs=>xs.map(x=>x.label);
 const choice=(node,label)=>node.children.find(x=>x.label===label);
 test('catalog contains the specified regional and product selection paths',()=>{
- assert.equal(allProducts.length,27);
+ assert.equal(allProducts.length,28);
  assert.deepEqual(labels(catalog.Fortnite.children),['Россия','Украина']);
  assert.equal(choice(catalog.Fortnite,'Россия').children.length,10);
  assert.deepEqual(labels(choice(catalog.Valorant,'Турция').children),['325 VP','825 VP','1700 VP','2925 VP','4325 VP','8900 VP']);
@@ -29,7 +29,8 @@ test('requested catalog removals stay scoped to their categories',()=>{
  assert.ok(choice(choice(catalog['Battle.net'],'World of Warcraft 60 Days Time Card'),'Канада'));
  assert.equal(choice(catalog['Steam Gifts'],'Польша'),undefined);
  assert.equal(choice(catalog['Steam Gifts'],'Великобритания'),undefined);
- assert.ok(choice(catalog.Steam,'Польша'));
+ assert.deepEqual(catalog.Steam.children,[]);
+ assert.equal(catalog.Steam.title,'Steam Auto-Regs Games');
  assert.equal(choice(choice(catalog.Nintendo,'Подписка'),'Чехия'),undefined);
  assert.equal(choice(catalog['Electronic Arts'],'The Sims 4'),undefined);
  assert.equal(choice(choice(catalog['Electronic Arts'],'EA Sports FC'),'EA Sports FC 24'),undefined);
