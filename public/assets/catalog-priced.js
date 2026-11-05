@@ -17,6 +17,9 @@ function regionName(group,entry){
  return group.replace(/^Подарочная карта · |^Подписка · /,'').replace(/^Global$/,'Глобал');
 }
 function route(root,product,group,entry){
+ if(product==='Fortnite'&&group.startsWith('Fortnite Gift Card · '))return branch(branch(root,'Fortnite Gift Card'),group.replace('Fortnite Gift Card · ',''));
+ if(product==='ExitLag'&&/^Tier [123]$/.test(group))return branch(root,group);
+ if(['Honkai: Star Rail','Zenless Zone Zero'].includes(product))return root;
  if(product==='PUBG Mobile'){
   if(group==='PUBG: Battlegrounds')return branch(root,'PUBG: Battlegrounds');
   const mobile=branch(root,'PUBG Mobile');

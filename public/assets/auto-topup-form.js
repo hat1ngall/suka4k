@@ -1,4 +1,4 @@
-import {priceLists} from './price-list.js?v=1';
+import {priceLists} from './price-list.js?v=2';
 import {displayProductName} from './catalog-product.js?v=1';
 import {autoItems} from './auto-topup.js?v=1';
 const form=document.querySelector('#topup'),platform=document.querySelector('#platform'),amount=document.querySelector('#amount');

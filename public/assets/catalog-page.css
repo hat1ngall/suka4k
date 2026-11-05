@@ -72,3 +72,10 @@ html[data-theme=dark] .page-header{--banner-bg:#352038;background:var(--banner-b
 @media(max-width:360px){.topbar{grid-template-columns:minmax(0,1fr) auto}.topbar .brand-group{grid-column:1;grid-row:1}.topbar .donuts{grid-column:2;grid-row:1}.topbar .nav{grid-column:1;grid-row:2}.topbar .catalog-cart-button{grid-column:2;grid-row:2;justify-self:end}}
 @media(max-width:360px){.topbar .nav{font-size:11px;gap:8px;overflow:visible}}
 .activation-guide ol{padding-left:22px;line-height:1.6}.activation-guide li+li{margin-top:8px}
+/* Choice tiles use the artwork of their own category. */
+.options{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.option{min-height:176px;padding:14px;gap:20px;background:var(--paper);box-shadow:0 6px 18px #9e376014}
+.option-visual{flex:0 0 140px;min-height:140px;padding:0;border:0;border-radius:16px;overflow:hidden;background:var(--soft)}
+.option-themed{background-image:var(--image);background-size:200% 300%;background-position:var(--x) var(--y);background-repeat:no-repeat}
+.option-heading{gap:8px}.option-title{font-size:19px;line-height:1.2}.option-badge{font-size:11px;font-weight:800;color:#d52879;background:#f9deec;border-radius:20px;padding:5px 10px}.option-description{color:var(--muted);font-size:13px;line-height:1.4}.option-action{width:39px;height:39px;border-radius:50%;background:var(--soft);justify-content:center}.option-arrow{font-size:23px}
+@media(max-width:600px){.options{grid-template-columns:1fr;gap:10px}.option{min-height:120px;padding:10px;gap:12px}.option-visual{flex-basis:90px;min-height:90px}.option-title{font-size:15px}.option-description{font-size:11px}.option-action{width:31px;height:31px}.option-arrow{font-size:19px}}
