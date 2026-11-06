@@ -22,6 +22,7 @@ const guides={
  'ChatGPT / OpenAI':['Откройте chatgpt.com/redeem и войдите в нужный аккаунт и рабочее пространство.','Введите PIN и подтвердите активацию. Активация не подключает подписку автоматически.','Карты предназначены для активации в США при биллинге в USD. Баланс нельзя использовать для OpenAI API или подписок через App Store и Google Play.']
 };
 export function getActivationGuide(product,path=[]){
+ if(product==='Steam'&&path[0]==='Подарочные карты')return guides['Steam Gifts'];
  if(guides[product])return guides[product];
  if(product==='Xbox'&&path.length)return microsoft;
  if(product==='Apex Legends'&&path.length)return path[0]==='Xbox'?microsoft:ea;

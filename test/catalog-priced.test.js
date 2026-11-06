@@ -24,5 +24,7 @@ test('prices appear in existing paths, with all spreadsheet entries accessible',
  assert.ok(get(priced('Apple'),'Польша').children.some(x=>x.sourceRow===295));
  assert.ok(get(priced('Nintendo'),'Подписка','Польша').children.some(x=>x.sourceRow===962));
  assert.ok(get(priced('Steam Gifts'),'Таиланд').children.length);
+ assert.ok(get(priced('Steam'),'Подарочные карты','Таиланд').children.length);
+ assert.ok(get(priced('Steam'),'Steam Автореги','Польша'));
  assert.equal(get(priced('Steam Gifts'),'Польша'),undefined);
 });

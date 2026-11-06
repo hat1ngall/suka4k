@@ -1,9 +1,9 @@
-import {catalog,allProducts} from './catalog-data.js?v=4';
+import {catalog,allProducts} from './catalog-data.js?v=5';
 import {priceLists} from './price-list.js?v=2';
-import {buildPricedCatalog} from './catalog-priced.js?v=2';
-import {displayProductName} from './catalog-product.js?v=1';
+import {buildPricedCatalog} from './catalog-priced.js?v=3';
+import {displayProductName} from './catalog-product.js?v=2';
 import {createCatalogCart} from './catalog-cart.js?v=1';
-import {getActivationGuide} from './activation-guides.js?v=1';
+import {getActivationGuide} from './activation-guides.js?v=2';
 import {isAutoDelivery} from './auto-topup.js?v=1';
 import {flagForRegion} from './region-flags.js';
 const $=selector=>document.querySelector(selector);
@@ -11,7 +11,8 @@ const params=new URLSearchParams(location.search),name=params.get('product')||''
 const validSteps=raw===''||/^\d+(?:\.\d+)*$/.test(raw);
 const indexes=validSteps&&raw?raw.split('.').map(Number):[];
 const title=allProducts.includes(name)?name:'';
-const root=buildPricedCatalog(name,catalog[name],priceLists);
+const product=name==='Steam Auto-Regs Games'?'Steam':name;
+const root=buildPricedCatalog(product,catalog[product],priceLists);
 const label=root.title||name;
 const sceneNames=['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','Zenless Zone Zero','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail'];
 const sceneIndex=sceneNames.indexOf(name==='Steam Auto-Regs Games'?'Steam':name),banner=$('.banner-scene');
@@ -49,6 +50,7 @@ else{
     if(!option.pending&&!option.children){
      const card=document.createElement('article');card.className='catalog-product';
      const picture=document.createElement('div');picture.className='catalog-product-art';picture.setAttribute('aria-hidden','true');
+     picture.style.setProperty('--product-icon',`url(/assets/${/подпис|pass|netflix|spotify/i.test(name+' '+option.label)?'category-subscription.svg':/gift|карт|steam|xbox|apple|google/i.test(name+' '+option.label)?'category-topup.svg':'category-game.svg'})`);
      picture.style.setProperty('--image',`url(/assets/catalog-cinematic-${Math.floor(scene/6)+1}.png)`);picture.style.setProperty('--x',`${(scene%2)*100}%`);picture.style.setProperty('--y',`${Math.floor((scene%6)/2)*50}%`);picture.style.setProperty('--ratio',Math.floor(scene/6)===1?'2.25':'2.665');
      const content=document.createElement('div');content.className='catalog-product-content';const productTitle=document.createElement('h2');const productName=displayProductName(name,option,ancestors.map(x=>x.label));productTitle.textContent=productName;
      const price=document.createElement('p');price.className='catalog-product-price';price.textContent=option.priceRub!=null?Number(option.priceRub).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽':'Цена уточняется';
@@ -57,7 +59,7 @@ else{
      add.addEventListener('click',async()=>{if(auto){if(option.sourceRow)location.href='/home?'+new URLSearchParams({platform:name,item:String(option.sourceRow)})+'#balance';return}add.disabled=true;try{await addToCart({platform:name,productName,region:ancestors.map(x=>x.label).join(' · '),login:'',currency:'RUB',amount:Number(option.priceRub),sourceRow:option.sourceRow||null})}finally{add.disabled=false}});
      content.append(productTitle,price,add);card.append(picture,content);options.append(card);return;
     }
-    const link=document.createElement('a');link.className='option'+(option.pending?' pending':'');link.href=url([...indexes,index]);const visual=document.createElement('span');visual.className='option-visual';const heading=document.createElement('span');heading.className='option-heading';const flag=flagForRegion(option.label);if(flag){const image=document.createElement('img');image.className='region-flag';image.src='/assets/flags/'+flag+'.svg';image.alt='';image.setAttribute('aria-hidden','true');image.width=36;image.height=27;visual.append(image)}else{visual.classList.add('option-themed');visual.style.setProperty('--image',`url(/assets/catalog-cinematic-${Math.floor(scene/6)+1}.png)`);visual.style.setProperty('--x',`${(scene%2)*100}%`);visual.style.setProperty('--y',`${Math.floor((scene%6)/2)*50}%`)}const badge=document.createElement('span');badge.className='option-badge';badge.textContent=flag?'Регион':'Каталог';const text=document.createElement('span');text.className='option-title';text.textContent=option.label;const description=document.createElement('span');description.className='option-description';description.textContent=flag?'Товары для выбранного региона':option.label.includes('Подписка')?'Доступ к подписке и предложениям':option.label.includes('карт')||option.label.includes('Card')?'Подарочные карты и пополнение':'Выбери подходящий вариант';heading.append(badge,text,description);const action=document.createElement('span');action.className='option-action';const actionLabel=document.createElement('span');actionLabel.textContent=option.pending?'Скоро':'Выбрать';const arrow=document.createElement('span');arrow.className='option-arrow';arrow.textContent='→';arrow.setAttribute('aria-hidden','true');action.append(actionLabel,arrow);link.append(visual,heading,action);options.append(link);
+    const link=document.createElement('a');link.className='option'+(option.pending?' pending':'');link.href=url([...indexes,index]);const visual=document.createElement('span');visual.className='option-visual';const heading=document.createElement('span');heading.className='option-heading';const flag=flagForRegion(option.label);if(flag){const image=document.createElement('img');image.className='region-flag';image.src='/assets/flags/'+flag+'.svg';image.alt='';image.setAttribute('aria-hidden','true');image.width=36;image.height=27;visual.append(image)}else{const image=document.createElement('img');image.className='option-category-icon';image.src=/подпис|pass/i.test(option.label)?'/assets/category-subscription.svg':/подароч|card|кошел|пополн/i.test(option.label)?'/assets/category-topup.svg':'/assets/category-game.svg';image.alt='';visual.append(image)}const badge=document.createElement('span');badge.className='option-badge';badge.textContent=flag?'Регион':'Каталог';const text=document.createElement('span');text.className='option-title';text.textContent=option.label;const description=document.createElement('span');description.className='option-description';description.textContent=flag?'Товары для выбранного региона':option.label.includes('Подписка')?'Доступ к подписке и предложениям':option.label.includes('карт')||option.label.includes('Card')?'Подарочные карты и пополнение':'Выбери подходящий вариант';heading.append(badge,text,description);const action=document.createElement('span');action.className='option-action';const actionLabel=document.createElement('span');actionLabel.textContent=option.pending?'Скоро':'Выбрать';const arrow=document.createElement('span');arrow.className='option-arrow';arrow.textContent='→';arrow.setAttribute('aria-hidden','true');action.append(actionLabel,arrow);link.append(visual,heading,action);options.append(link);
    });
  }
 }

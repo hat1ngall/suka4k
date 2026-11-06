@@ -17,6 +17,7 @@ function regionName(group,entry){
  return group.replace(/^Подарочная карта · |^Подписка · /,'').replace(/^Global$/,'Глобал');
 }
 function route(root,product,group,entry){
+ if(product==='Steam')return branch(branch(root,'Подарочные карты'),regionName(group,entry));
  if(product==='Fortnite'&&group.startsWith('Fortnite Gift Card · '))return branch(branch(root,'Fortnite Gift Card'),group.replace('Fortnite Gift Card · ',''));
  if(product==='ExitLag'&&/^Tier [123]$/.test(group))return branch(root,group);
  if(['Honkai: Star Rail','Zenless Zone Zero'].includes(product))return root;
@@ -73,7 +74,7 @@ function addEntries(target,product,entries){
 }
 export function buildPricedCatalog(product,base,lists){
  const root=JSON.parse(JSON.stringify(base||{title:product,children:[]}));
- for(const [group,entries] of Object.entries(lists[product]||{}))for(const entry of entries){
+ for(const [group,entries] of Object.entries(lists[product==='Steam'?'Steam Gifts':product]||{}))for(const entry of entries){
   const target=route(root,product,group,entry);
   addEntries(target,product,[entry]);
  }

@@ -8,6 +8,7 @@ export function displayProductName(product, item, path=[]){
  if(product==='Roblox')value=value.replace(/\bglobal\b/i,'').trim()+' Robux';
  const regions=['саудовская аравия','арабские эмираты','великобритания','новая зеландия','казахстан','индонезия','филиппины','нидерланды','аргентина','австралия','вьетнам','малайзия','германия','франция','бразилия','испания','италия','сингапур','колумбия','америка','польша','польши','мексика','украина','беларусь','россия','турция','европа','япония','канада','гонконг','египет','индия','тайланд','таиланд','чехия','юар'];
  for(const region of regions)value=value.replace(new RegExp('(^|\\s)'+region+'(?=\\s|$)','ig'),' ');
- value=value.replace(/\bTRYY\b/ig,'TRY').replace(/\bglobal\b/ig,' ').replace(/\s+автовыдача(?=\s|$)/ig,' ').replace(/\s+/g,' ').trim();
+ value=value.replace(/\bTRYY\b/ig,'TRY').replace(/\bglobal\b/ig,' ').replace(/автовыдача/ig,' ').replace(/\bauto\b/ig,' ').replace(/\s+/g,' ').trim();
+ value=value.replace(/\b(BRL|USD|EUR|GBP|TRY|PLN|JPY|KZT|UAH|RUB|SAR|AED|AUD|CAD|IDR|INR|MXN|COP|CHF|SGD|ZAR|PHP|MYR|THB|HKD|NZD)\s+(\d+(?:[.,]\d+)?)/gi,(_,currency,amount)=>amount+' '+currency.toUpperCase());
  return value||item.label;
 }
