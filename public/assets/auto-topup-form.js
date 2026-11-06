@@ -7,18 +7,21 @@ if(form&&platform&&amount){
  const label=document.createElement('label');label.htmlFor='auto-product';label.textContent='Товар';
  const select=document.createElement('select');select.id='auto-product';field.append(label,select);document.querySelector('#stars-field').before(field);
  const amounts=document.querySelector('.amounts'),amountLabel=document.querySelector('label[for="amount"]'),hint=document.querySelector('#amount-hint');
- let items=[];
+ let items=[],wasGame=false;
  function choose(){
   const item=items.find(i=>String(i.sourceRow)===select.value);
-  amount.readOnly=!!item;amounts.hidden=!!item;
-  amountLabel.textContent=item?'Стоимость':'Сумма пополнения';
-  if(platform.value!=='Telegram Stars')hint.textContent=item?'Цена выбранного товара.':'Укажите желаемую сумму пополнения.';
+  const game=platform.value!=='Steam'&&platform.value!=='Telegram Stars';
+  amount.readOnly=game;amounts.hidden=platform.value!=='Steam';
+  amountLabel.textContent=game?'Стоимость':'Сумма пополнения';
+  if(platform.value!=='Telegram Stars')hint.textContent=game?(item?'Цена выбранного товара.':'Выберите товар, чтобы увидеть цену.'):'Укажите желаемую сумму пополнения.';
   if(item){amount.value=item.priceRub;form.dataset.selectedProduct=displayProductName(platform.value,item);form.dataset.selectedRow=item.sourceRow;form.dataset.selectedRegion=item.group;}
-  else{delete form.dataset.selectedProduct;delete form.dataset.selectedRow;delete form.dataset.selectedRegion;}
+  else{if(game)amount.value='';delete form.dataset.selectedProduct;delete form.dataset.selectedRow;delete form.dataset.selectedRegion;}
  }
  function refresh(){
-  items=autoItems(platform.value,priceLists);field.hidden=!items.length;select.replaceChildren();
-  const empty=document.createElement('option');empty.value='';empty.textContent='Своя сумма';select.append(empty);
+  const game=platform.value!=='Steam'&&platform.value!=='Telegram Stars';
+  if(wasGame&&!game){amount.value=platform.value==='Steam'?({RUB:'1000',KZT:'6000',UAH:'600'}[document.querySelector('#region').value]||'1000'):'1000';amount.dispatchEvent(new Event('input',{bubbles:true}))}
+  wasGame=game;items=autoItems(platform.value,priceLists);field.hidden=!game;select.required=game;select.disabled=!game;select.replaceChildren();
+  const empty=document.createElement('option');empty.value='';empty.textContent=items.length?'Выберите товар':'Товары пока не добавлены';select.append(empty);
   for(const item of items){const option=document.createElement('option');option.value=item.sourceRow;option.textContent=(platform.value==='PUBG Mobile'?item.group+' · ':'')+displayProductName(platform.value,item)+' — '+Number(item.priceRub).toLocaleString('ru-RU')+' ₽';select.append(option)}
   choose();
  }
