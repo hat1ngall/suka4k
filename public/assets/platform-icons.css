@@ -11,3 +11,6 @@ html[data-theme="dark"] .steam-icon[data-platform-icon="zenless"] img,html[data-
 /* Keep the complete logos visible on an even, high-contrast badge. */
 .steam-icon,html[data-theme="dark"] .steam-icon{background:#fff;border:1px solid #e8d3e0;padding:4px}
 .steam-icon img,html[data-theme="dark"] .steam-icon img,.steam-icon[data-platform-icon] img,html[data-theme="dark"] .steam-icon[data-platform-icon] img{width:100%;height:100%;object-fit:contain;padding:2px;border-radius:0;filter:none}
+
+/* A padded badge keeps each genuine logo complete and readable in both themes. */
+.steam-icon,html[data-theme="dark"] .steam-icon{width:66px;height:50px;border-radius:14px;background:#fff;box-shadow:0 0 0 1px #4021371a;padding:6px;overflow:hidden}.steam-icon[data-platform-icon="steam"],html[data-theme="dark"] .steam-icon[data-platform-icon="steam"]{background:#302238}.steam-icon img,html[data-theme="dark"] .steam-icon img{width:100%;height:100%;object-fit:contain;padding:0;filter:none}.steam-icon[data-platform-icon="telegram"] img{padding:2px}
