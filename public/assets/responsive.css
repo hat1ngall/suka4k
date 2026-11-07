@@ -137,3 +137,7 @@ html[data-theme="dark"] .secondary-page .catalog,html[data-theme="dark"] .second
 
 @media(min-width:380px) and (max-width:520px){.topbar .nav{gap:7px;font-size:12px!important}}
 .catalog .product .custom-scene:after{background:linear-gradient(90deg,rgba(6,8,19,.96),rgba(6,8,19,.72) 38%,transparent 85%)}
+
+/* Place the Valorant mascot farther right, keeping the title area clear. */
+.catalog .product .product-scene[style*="catalog-cinematic-1.png"][style*="--cinematic-x:100%"][style*="--cinematic-y:0%"]:before{right:-52%}
+@media(max-width:440px){.catalog .product .product-scene[style*="catalog-cinematic-1.png"][style*="--cinematic-x:100%"][style*="--cinematic-y:0%"]:before{right:-105%}}

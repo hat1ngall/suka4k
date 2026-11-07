@@ -14,7 +14,7 @@ const title=allProducts.includes(name)?name:'';
 const product=name==='Steam Auto-Regs Games'?'Steam':name;
 const root=buildPricedCatalog(product,catalog[product],priceLists);
 const label=root.title||name;
-const customImages={'Arena Breakout':'arena','GearUP Booster PC':'gearup','Rockstar Games':'rockstar','Razer Gold':'razer','Rewarble':'rewarble','Eneba':'eneba','League of Legends':'league'};
+const customImages={'ExitLag':'exitlag','Arena Breakout':'arena','GearUP Booster PC':'gearup','Rockstar Games':'rockstar','Razer Gold':'razer','Rewarble':'rewarble','Eneba':'eneba','League of Legends':'league'};
 const sceneNames=['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail'];
 const sceneIndex=sceneNames.indexOf(name==='Steam Auto-Regs Games'?'Steam':name),banner=$('.banner-scene');
 if(sceneIndex>=0){banner.style.setProperty('--image',`url(/assets/banner-mascots-${Math.floor(sceneIndex/6)+1}.png)`);banner.style.setProperty('--x',`${(sceneIndex%2)*100}%`);banner.style.setProperty('--y',`${Math.floor((sceneIndex%6)/2)*50}%`);banner.style.setProperty('--ratio',Math.floor(sceneIndex/6)===1?'2.25':'2.665')}else{banner.hidden=true}
@@ -46,6 +46,7 @@ else{
    $('#subtitle').textContent='';
    $('.banner-cta').hidden=false;
    const options=$('#options');
+   if(current.children.some(option=>!option.pending&&!option.children))options.classList.add('product-options');
    const scene=Math.max(0,sceneIndex);
    current.children.forEach((option,index)=>{
     if(!option.pending&&!option.children){
@@ -65,3 +66,9 @@ else{
    });
  }
 }
+
+const catalogSearch=$('#catalog-search'),catalogSuggestions=$('#catalog-suggestions');
+function updateCatalogSearch(){const query=catalogSearch.value.trim().toLocaleLowerCase('ru');catalogSuggestions.replaceChildren();if(query){for(const name of allProducts.filter(x=>x&&x!=='Telegram Stars'&&x.toLocaleLowerCase('ru').includes(query)).slice(0,8)){const link=document.createElement('a');link.href='/catalog.html?'+new URLSearchParams({product:name});link.textContent=name;catalogSuggestions.append(link)}}catalogSuggestions.hidden=!catalogSuggestions.childElementCount}
+catalogSearch.addEventListener('input',updateCatalogSearch);catalogSearch.addEventListener('focus',updateCatalogSearch);catalogSearch.addEventListener('keydown',e=>{if(e.key==='Escape')catalogSuggestions.hidden=true;if(e.key==='Enter'){const first=catalogSuggestions.querySelector('a');if(first)location.href=first.href}});document.addEventListener('click',e=>{if(!e.target.closest('.catalog-search-wrap'))catalogSuggestions.hidden=true});
+$('.catalog-share').addEventListener('click',async()=>{try{if(navigator.share)await navigator.share({title:document.title,url:location.href});else{await navigator.clipboard.writeText(location.href);const notice=$('#catalog-notice');notice.textContent='Ссылка скопирована';notice.hidden=false;setTimeout(()=>notice.hidden=true,2500)}}catch{}});
+fetch('/api/auth/me',{credentials:'same-origin'}).then(r=>r.ok?r.json():null).then(data=>{if(data?.user)$('.catalog-account').textContent=data.user.nickname||data.user.email}).catch(()=>{});
