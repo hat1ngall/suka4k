@@ -49,17 +49,18 @@ async function scenario(pool) {
     const home = await fetch(base + '/'); assert.equal(home.status, 200); assert.match(await home.text(), /id="account-button"/);
     assert.equal((await fetch(base + '/home')).status, 200);
     assert.equal((await fetch(base + '/offer.html')).status, 200);
-    assert.equal((await post('/api/auth/register', {email:'a@example.test',password:'password123',nickname:'Player',consent:true}, null, 'https://evil.example')).status, 403);
-    assert.equal((await post('/api/auth/register', {email:'a@example.test', password:'password123', nickname:'Player'})).status, 400);
-    assert.equal((await post('/api/auth/register', {email:'a@example.test', password:'password123', nickname:'X', consent:true})).status, 400);
-    let res = await post('/api/auth/register', {email:'A@example.test', password:'password123', nickname:'Player', consent:true});
+    assert.equal((await post('/api/auth/register', {email:'a@example.test',password:' pass word 123 ',nickname:'Player',consent:true}, null, 'https://evil.example')).status, 403);
+    assert.equal((await post('/api/auth/register', {email:'a@example.test', password:' pass word 123 ', nickname:'Player'})).status, 400);
+    assert.equal((await post('/api/auth/register', {email:'a@example.test', password:' pass word 123 ', nickname:'X', consent:true})).status, 400);
+    let res = await post('/api/auth/register', {email:'A@example.test', password:' pass word 123 ', nickname:'Player', consent:true});
     assert.equal(res.status, 201);
     const created = await res.json(); assert.equal(created.user.email, 'a@example.test'); assert.equal(created.user.nickname, 'Player');
     const cookie = res.headers.get('set-cookie').split(';')[0];
     assert.match(res.headers.get('set-cookie'), /HttpOnly/i);
     assert.match(res.headers.get('set-cookie'), /SameSite=Lax/i);
-    assert.equal((await post('/api/auth/register', {email:'a@example.test',password:'password123',nickname:'Player',consent:true})).status, 409);
+    assert.equal((await post('/api/auth/register', {email:'a@example.test',password:' pass word 123 ',nickname:'Player',consent:true})).status, 409);
     assert.equal((await post('/api/auth/login', {email:'a@example.test',password:'badpassword'})).status, 401);
+    assert.equal((await post('/api/auth/login', {email:'a@example.test',password:'pass word 123'})).status, 401);
     await new Promise(resolve => server.close(resolve));
     server = createApp(pool).listen(0, '127.0.0.1');
     await new Promise(resolve => server.once('listening', resolve));
@@ -69,7 +70,7 @@ async function scenario(pool) {
     assert.equal((await post('/api/auth/logout', null, cookie)).status, 200);
     res = await fetch(base + '/api/auth/me', {headers:{cookie}});
     assert.equal((await res.json()).user, null);
-    res = await post('/api/auth/login', {email:'a@example.test',password:'password123'});
+    res = await post('/api/auth/login', {email:'a@example.test',password:' pass word 123 '});
     assert.equal(res.status, 200);
     assert.equal((await res.json()).user.email, 'a@example.test');
   } finally { await new Promise(resolve => server.close(resolve)); }
