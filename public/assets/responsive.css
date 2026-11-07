@@ -133,6 +133,7 @@ html[data-theme="dark"] .secondary-page .catalog,html[data-theme="dark"] .second
 @media(max-width:440px){.catalog .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.catalog .product,.catalog .product:nth-child(n){min-height:250px;padding:13px}.catalog .product h3{font-size:clamp(14px,4vw,19px);max-width:100%;line-height:1.1}.catalog .product p{font-size:11px;max-width:80%}.catalog .product .product-view{font-size:11px;padding:10px 12px}.catalog .product .product-scene:before{height:100%;right:-40%;}.catalog .product .product-scene:after{background:linear-gradient(180deg,rgba(6,8,19,.65),transparent 60%,rgba(6,8,19,.35))}}
 @media(min-width:380px) and (max-width:520px){.topbar .brand-group{flex:0 0 auto;order:0;margin:0}.topbar .nav{order:1;flex:1 1 auto;width:auto;justify-content:flex-end;gap:10px;font-size:11px;overflow:visible}.topbar .nav-right{order:2;flex:0 0 100%}.topbar .search{order:3}}
 @media(min-width:380px) and (max-width:520px){.topbar .nav{font-size:11px!important}}
-.catalog .product .custom-scene:before{inset:0;width:100%;height:100%;aspect-ratio:auto;background-color:#291629;background-image:var(--new-image);background-size:38% auto;background-position:80% center;background-repeat:no-repeat}
+.catalog .product .custom-scene:before{inset:0;width:100%;height:100%;aspect-ratio:auto;background-color:#291629;background-image:var(--new-image);background-size:cover;background-position:75% center;background-repeat:no-repeat}
 
 @media(min-width:380px) and (max-width:520px){.topbar .nav{gap:7px;font-size:12px!important}}
+.catalog .product .custom-scene:after{background:linear-gradient(90deg,rgba(6,8,19,.96),rgba(6,8,19,.72) 38%,transparent 85%)}

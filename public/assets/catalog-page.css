@@ -89,3 +89,5 @@ html[data-theme=dark] .page-header-copy,html[data-theme=dark] .page-header .subt
 @media(min-width:380px) and (max-width:760px){.topbar .nav{font-size:11px!important}}
 
 @media(min-width:380px) and (max-width:760px){.topbar .nav{gap:7px;font-size:12px!important}}
+
+.catalog-product-art.custom-product-art:before{inset:0;background:var(--custom-art) center/cover no-repeat}

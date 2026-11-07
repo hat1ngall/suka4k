@@ -14,6 +14,7 @@ const title=allProducts.includes(name)?name:'';
 const product=name==='Steam Auto-Regs Games'?'Steam':name;
 const root=buildPricedCatalog(product,catalog[product],priceLists);
 const label=root.title||name;
+const customImages={'Arena Breakout':'arena','GearUP Booster PC':'gearup','Rockstar Games':'rockstar','Razer Gold':'razer','Rewarble':'rewarble','Eneba':'eneba','League of Legends':'league'};
 const sceneNames=['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail'];
 const sceneIndex=sceneNames.indexOf(name==='Steam Auto-Regs Games'?'Steam':name),banner=$('.banner-scene');
 if(sceneIndex>=0){banner.style.setProperty('--image',`url(/assets/banner-mascots-${Math.floor(sceneIndex/6)+1}.png)`);banner.style.setProperty('--x',`${(sceneIndex%2)*100}%`);banner.style.setProperty('--y',`${Math.floor((sceneIndex%6)/2)*50}%`);banner.style.setProperty('--ratio',Math.floor(sceneIndex/6)===1?'2.25':'2.665')}else{banner.hidden=true}
@@ -50,6 +51,7 @@ else{
     if(!option.pending&&!option.children){
      const card=document.createElement('article');card.className='catalog-product';
      const picture=document.createElement('div');picture.className='catalog-product-art';picture.setAttribute('aria-hidden','true');
+     if(customImages[name]){picture.classList.add('custom-product-art');picture.style.setProperty('--custom-art',`url(/assets/category-${customImages[name]}.png?v=2)`)}
      picture.style.setProperty('--product-icon',`url(/assets/${/подпис|pass|netflix|spotify/i.test(name+' '+option.label)?'category-subscription.svg':/gift|карт|steam|xbox|apple|google/i.test(name+' '+option.label)?'category-topup.svg':'category-game.svg'})`);
      picture.style.setProperty('--image',`url(/assets/catalog-cinematic-${Math.floor(scene/6)+1}.png)`);picture.style.setProperty('--x',`${(scene%2)*100}%`);picture.style.setProperty('--y',`${Math.floor((scene%6)/2)*50}%`);picture.style.setProperty('--ratio',Math.floor(scene/6)===1?'2.25':'2.665');
      const content=document.createElement('div');content.className='catalog-product-content';const productTitle=document.createElement('h2');const productName=displayProductName(name,option,ancestors.map(x=>x.label));productTitle.textContent=productName;
