@@ -5,7 +5,7 @@ import { rateLimit } from 'express-rate-limit';
 import { createSessionToken, hashPassword, normalizeEmail, tokenHash, validPassword, verifyPassword } from './auth.js';
 import { resolve } from 'node:path';
 import { randomUUID, createHash, timingSafeEqual } from 'node:crypto';
-const CATALOG_PRODUCTS = Object.freeze(['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','Zenless Zone Zero','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail','Arena Breakout','GearUP Booster PC','Rockstar Games','Razer Gold','Rewarble','Eneba','League of Legends']);
+const CATALOG_PRODUCTS = Object.freeze(['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail','Arena Breakout','GearUP Booster PC','Rockstar Games','Razer Gold','Rewarble','Eneba','League of Legends']);
 const COOKIE = 'voreq_session';
 const MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 const DUMMY_HASH = 'scrypt$00000000000000000000000000000000$' + '00'.repeat(64);

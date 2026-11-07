@@ -1,6 +1,6 @@
-import {priceLists} from './price-list.js?v=3';
+import {priceLists} from './price-list.js?v=4';
 import {displayProductName} from './catalog-product.js?v=3';
-import {autoItems} from './auto-topup.js?v=1';
+import {autoItems} from './auto-topup.js?v=2';
 const form=document.querySelector('#topup'),platform=document.querySelector('#platform'),amount=document.querySelector('#amount');
 if(form&&platform&&amount){
  const field=document.createElement('div');field.className='field';field.id='auto-product-field';field.hidden=true;

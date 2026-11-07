@@ -1,10 +1,10 @@
-import {catalog,allProducts} from './catalog-data.js?v=6';
-import {priceLists} from './price-list.js?v=3';
-import {buildPricedCatalog} from './catalog-priced.js?v=4';
+import {catalog,allProducts} from './catalog-data.js?v=7';
+import {priceLists} from './price-list.js?v=4';
+import {buildPricedCatalog} from './catalog-priced.js?v=5';
 import {displayProductName} from './catalog-product.js?v=3';
 import {createCatalogCart} from './catalog-cart.js?v=1';
 import {getActivationGuide} from './activation-guides.js?v=3';
-import {isAutoDelivery} from './auto-topup.js?v=1';
+import {isAutoDelivery} from './auto-topup.js?v=2';
 import {flagForRegion} from './region-flags.js';
 const $=selector=>document.querySelector(selector);
 const params=new URLSearchParams(location.search),name=params.get('product')||'',raw=params.get('step')||'';
@@ -14,7 +14,7 @@ const title=allProducts.includes(name)?name:'';
 const product=name==='Steam Auto-Regs Games'?'Steam':name;
 const root=buildPricedCatalog(product,catalog[product],priceLists);
 const label=root.title||name;
-const sceneNames=['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','Zenless Zone Zero','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail'];
+const sceneNames=['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail'];
 const sceneIndex=sceneNames.indexOf(name==='Steam Auto-Regs Games'?'Steam':name),banner=$('.banner-scene');
 if(sceneIndex>=0){banner.style.setProperty('--image',`url(/assets/banner-mascots-${Math.floor(sceneIndex/6)+1}.png)`);banner.style.setProperty('--x',`${(sceneIndex%2)*100}%`);banner.style.setProperty('--y',`${Math.floor((sceneIndex%6)/2)*50}%`);banner.style.setProperty('--ratio',Math.floor(sceneIndex/6)===1?'2.25':'2.665')}else{banner.hidden=true}
 function url(path){const query=new URLSearchParams({product:name});if(path.length)query.set('step',path.join('.'));return '/catalog.html?'+query.toString()}

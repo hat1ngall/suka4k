@@ -134,3 +134,5 @@ html[data-theme="dark"] .secondary-page .catalog,html[data-theme="dark"] .second
 @media(min-width:380px) and (max-width:520px){.topbar .brand-group{flex:0 0 auto;order:0;margin:0}.topbar .nav{order:1;flex:1 1 auto;width:auto;justify-content:flex-end;gap:10px;font-size:11px;overflow:visible}.topbar .nav-right{order:2;flex:0 0 100%}.topbar .search{order:3}}
 @media(min-width:380px) and (max-width:520px){.topbar .nav{font-size:11px!important}}
 .catalog .product .custom-scene:before{inset:0;width:100%;height:100%;aspect-ratio:auto;background-color:#291629;background-image:var(--new-image);background-size:38% auto;background-position:80% center;background-repeat:no-repeat}
+
+@media(min-width:380px) and (max-width:520px){.topbar .nav{gap:7px;font-size:12px!important}}

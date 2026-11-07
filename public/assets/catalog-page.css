@@ -87,3 +87,5 @@ html[data-theme=dark] .page-header-copy,html[data-theme=dark] .page-header .subt
 @media(max-width:600px){.catalog-product-art:before{inset:25%}}
 @media(min-width:380px) and (max-width:760px){.topbar{display:flex}.topbar .brand-group{order:0;flex:0 0 auto;margin:0}.topbar .nav{order:1;flex:1 1 auto;width:auto;justify-content:flex-end;gap:10px;font-size:11px;overflow:visible}.topbar .catalog-cart-button{order:2;margin-left:auto}.topbar .donuts{order:3}}
 @media(min-width:380px) and (max-width:760px){.topbar .nav{font-size:11px!important}}
+
+@media(min-width:380px) and (max-width:760px){.topbar .nav{gap:7px;font-size:12px!important}}

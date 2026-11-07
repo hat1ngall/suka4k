@@ -30,3 +30,6 @@ html[data-theme="dark"] .auth-brand-panel .auth-logo,html[data-theme="dark"] .au
 .nav-right .pill,.catalog-cart-button,.donuts,.page-donuts{font-weight:900}
 .nav-right .donut-button{color:#2c1736}html[data-theme="dark"] .nav-right .donut-button{color:white}
 html:not([data-theme="dark"]) .topbar .donuts,html:not([data-theme="dark"]) .topbar .page-donuts{color:#2c1736}
+
+.topbar .nav{font-size:16px}
+@media(max-width:760px){.topbar .nav{font-size:14px}}
