@@ -4,7 +4,7 @@ import {catalog,allProducts} from '../public/assets/catalog-data.js';
 const labels=xs=>xs.map(x=>x.label);
 const choice=(node,label)=>node.children.find(x=>x.label===label);
 test('catalog contains the specified regional and product selection paths',()=>{
- assert.equal(allProducts.length,28);
+ assert.equal(allProducts.length,35);
  assert.deepEqual(labels(catalog.Fortnite.children),['Россия','Украина']);
  assert.equal(choice(catalog.Fortnite,'Россия').children.length,10);
  assert.deepEqual(labels(choice(catalog.Valorant,'Турция').children),['325 VP','825 VP','1700 VP','2925 VP','4325 VP','8900 VP']);

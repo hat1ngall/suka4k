@@ -3,6 +3,8 @@ export function displayProductName(product, item, path=[]){
  let value=item.label;
  if(!item.sourceRow)return value;
  value=value.replace(/^(?:xbox\s+gift|xbox\s+game\s+pass|nintendo\s+(?:gift|подписка)|google\s+play|google|steam\s+gift|playstation\s+store|ps|apple|amazon|netflix|riot|openai\s+chatgpt|robux|battle\s*net|batlle\s*net|marvel\s+rivals|pubg\s+mobile|pubg\s+battlefrounds|apex\s+legends|standoff|free\s+fire\s+снг\s*:|free\s+fire\s+код\s+global)\s*/i,'');
+ if(product==='Arena Breakout')value=value.replace(/^Arena Breakout:\s*/i,'');
+ if(product==='GearUP Booster PC')value=value.replace(/^GearUP Booster PC:\s*/i,'').replace(/\bmonths?\b/i,'мес.');
  value=value.replace(/^VB\s+(\d+).*$/i,'$1 В-баксов').replace(/^VP\s+(\d+).*$/i,'$1 VP');
  if(product==='Xbox'&&/game pass/i.test(item.label))value='Game Pass '+value;
  if(product==='Roblox')value=value.replace(/\bglobal\b/i,'').trim()+' Robux';

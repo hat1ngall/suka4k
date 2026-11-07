@@ -1,9 +1,9 @@
-import {catalog,allProducts} from './catalog-data.js?v=5';
-import {priceLists} from './price-list.js?v=2';
-import {buildPricedCatalog} from './catalog-priced.js?v=3';
-import {displayProductName} from './catalog-product.js?v=2';
+import {catalog,allProducts} from './catalog-data.js?v=6';
+import {priceLists} from './price-list.js?v=3';
+import {buildPricedCatalog} from './catalog-priced.js?v=4';
+import {displayProductName} from './catalog-product.js?v=3';
 import {createCatalogCart} from './catalog-cart.js?v=1';
-import {getActivationGuide} from './activation-guides.js?v=2';
+import {getActivationGuide} from './activation-guides.js?v=3';
 import {isAutoDelivery} from './auto-topup.js?v=1';
 import {flagForRegion} from './region-flags.js';
 const $=selector=>document.querySelector(selector);

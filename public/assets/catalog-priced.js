@@ -17,6 +17,7 @@ function regionName(group,entry){
  return group.replace(/^Подарочная карта · |^Подписка · /,'').replace(/^Global$/,'Глобал');
 }
 function route(root,product,group,entry){
+ if(['GearUP Booster PC','Rockstar Games'].includes(product))return root;
  if(product==='Steam')return branch(branch(root,'Подарочные карты'),regionName(group,entry));
  if(product==='Fortnite'&&group.startsWith('Fortnite Gift Card · '))return branch(branch(root,'Fortnite Gift Card'),group.replace('Fortnite Gift Card · ',''));
  if(product==='ExitLag'&&/^Tier [123]$/.test(group))return branch(root,group);
