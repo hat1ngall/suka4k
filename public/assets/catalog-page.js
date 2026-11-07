@@ -33,7 +33,7 @@ else{
  addCrumb(label,indexes.length?url([]):null,indexes.length===0);
  ancestors.forEach((entry,i)=>addCrumb(entry.label,i<ancestors.length-1?url(indexes.slice(0,i+1)):null,i===ancestors.length-1));
  const steps=getActivationGuide(name,ancestors.map(x=>x.label));if(steps){const details=document.createElement('details');details.className='activation-guide';const summary=document.createElement('summary');summary.textContent='Инструкция по активации';const list=document.createElement('ol');for(const step of steps){const item=document.createElement('li');item.textContent=step;list.append(item)}details.append(summary,list);$('.catalog-panel').append(details);}
- const back=$('#back-link');back.href=indexes.length?url(indexes.slice(0,-1)):'/home#catalog';back.textContent='← Назад';$('#footer-back').href=back.href;
+ const back=$('#back-link');back.href=indexes.length?url(indexes.slice(0,-1)):'/home?'+new URLSearchParams({fromProduct:name})+'#catalog';back.textContent='← Назад';$('#footer-back').href=back.href;
  if(!valid){$('#page-title').textContent='Раздел не найден';$('#subtitle').textContent='Возможно, ссылка устарела.';$('#empty').hidden=false;$('#empty').textContent='Вернись на предыдущую страницу и выбери вариант.'}
  else if(current.pending||!current.children?.length){
    $('#page-title').textContent=current===root?label:current.label;
