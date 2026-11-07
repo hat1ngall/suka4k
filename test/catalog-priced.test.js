@@ -8,7 +8,7 @@ const priced=name=>buildPricedCatalog(name,catalog[name],priceLists);
 const collect=node=>[...(node.sourceRow?[node.sourceRow]:[]),...(node.children||[]).flatMap(collect)];
 test('prices appear in existing paths, with all spreadsheet entries accessible',()=>{
  for(const [name,groups] of Object.entries(priceLists)){
-  const root=priced(name),expected=Object.values(groups).flat().map(x=>x.sourceRow).sort((a,b)=>a-b),actual=collect(root).sort((a,b)=>a-b);
+  const root=priced(name),expected=Object.entries(groups).filter(([group])=>name!=='League of Legends'||group!=='Регион не указан').flatMap(([,entries])=>entries).map(x=>x.sourceRow).sort((a,b)=>a-b),actual=collect(root).sort((a,b)=>a-b);
   assert.deepEqual(actual,expected,name);
   assert.equal(get(root,'Товары и цены'),undefined,name);
  }
@@ -28,3 +28,5 @@ test('prices appear in existing paths, with all spreadsheet entries accessible',
  assert.ok(get(priced('Steam'),'Steam Автореги','Польша'));
  assert.equal(get(priced('Steam Gifts'),'Польша'),undefined);
 });
+
+test('League of Legends uses known currency regions and hides unspecified region selectors',()=>{const root=priced('League of Legends');for(const region of ['Европа','Новая Зеландия','Бразилия','Великобритания','Австралия','Канада'])assert.ok(get(root,region)?.children.length,region);assert.equal(get(root,'Регион не указан'),undefined);for(const entry of root.children)assert.ok(entry.children,entry.label)});

@@ -77,7 +77,9 @@ export function buildPricedCatalog(product,base,lists){
  const root=JSON.parse(JSON.stringify(base||{title:product,children:[]}));
  for(const [group,entries] of Object.entries(lists[product==='Steam'?'Steam Gifts':product]||{}))for(const entry of entries){
   const target=route(root,product,group,entry);
-  addEntries(target,product,[entry]);
+  if (!(product==='League of Legends' && /^(?:без указанного региона|регион не указан)$/i.test(target.label || ''))) addEntries(target,product,[entry]);
  }
+ const prune=node=>{if(node.children){node.children=node.children.flatMap(child=>/^(?:без указанного региона|регион не указан)$/i.test(child.label||'')?(child.children||[]):[child]);node.children.forEach(prune)}};
+ prune(root);
  return root;
 }

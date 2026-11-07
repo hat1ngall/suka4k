@@ -33,3 +33,8 @@ html:not([data-theme="dark"]) .topbar .donuts,html:not([data-theme="dark"]) .top
 
 .topbar .nav{font-size:16px}
 @media(max-width:760px){.topbar .nav{font-size:14px}}
+
+/* Search suggestions use the same controls in both themes. */
+.topbar .search{z-index:20}.search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;max-height:min(50vh,340px);overflow:auto;padding:6px;background:var(--paper,#fffafd);border:1px solid var(--line,#e7ccdc);border-radius:16px;box-shadow:0 10px 28px #1b0b1e2b;color:var(--ink,#2c1736)}.search-results[hidden]{display:none}.search-result,.search-no-result{display:block;padding:11px 12px;border-radius:10px;font-size:14px;font-weight:750}.search-result:hover,.search-result:focus-visible{background:var(--soft,#f9deec);color:#d52a78}.search-no-result{color:var(--muted,#957f93)}
+.topbar .nav{font-size:16px!important}@media(max-width:760px){.topbar .nav{font-size:14px!important}}
+.topbar .nav a,.topbar .nav button{font-size:inherit!important}

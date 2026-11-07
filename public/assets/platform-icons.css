@@ -7,3 +7,7 @@
 
 .steam-icon[data-platform-icon="honkai"] img{object-fit:contain;padding:6px}
 html[data-theme="dark"] .steam-icon[data-platform-icon="zenless"] img,html[data-theme="dark"] .steam-icon[data-platform-icon="freefire"] img,html[data-theme="dark"] .steam-icon[data-platform-icon="pubg"] img,html[data-theme="dark"] .steam-icon[data-platform-icon="honkai"] img{object-fit:contain}
+
+/* Keep the complete logos visible on an even, high-contrast badge. */
+.steam-icon,html[data-theme="dark"] .steam-icon{background:#fff;border:1px solid #e8d3e0;padding:4px}
+.steam-icon img,html[data-theme="dark"] .steam-icon img,.steam-icon[data-platform-icon] img,html[data-theme="dark"] .steam-icon[data-platform-icon] img{width:100%;height:100%;object-fit:contain;padding:2px;border-radius:0;filter:none}

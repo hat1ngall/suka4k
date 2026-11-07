@@ -1,6 +1,6 @@
 import {catalog,allProducts} from './catalog-data.js?v=7';
 import {priceLists} from './price-list.js?v=4';
-import {buildPricedCatalog} from './catalog-priced.js?v=5';
+import {buildPricedCatalog} from './catalog-priced.js?v=6';
 import {displayProductName} from './catalog-product.js?v=3';
 import {createCatalogCart} from './catalog-cart.js?v=1';
 import {getActivationGuide} from './activation-guides.js?v=3';
