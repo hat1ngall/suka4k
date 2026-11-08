@@ -101,3 +101,5 @@ html[data-theme=dark] .page-header-copy,html[data-theme=dark] .page-header .subt
 @media(min-width:761px){.topbar{column-gap:10px}.topbar .brand-group{margin-right:14px}}
 .banner-scene.custom-banner:before{inset:0 0 0 auto;width:100%;height:100%;aspect-ratio:auto;background:var(--banner-cutout) right bottom/contain no-repeat}
 @media(max-width:600px){.banner-scene.custom-banner:before{height:100%;bottom:0;top:auto}}
+
+.activation-guide a{color:var(--pink);text-decoration:underline;overflow-wrap:anywhere}

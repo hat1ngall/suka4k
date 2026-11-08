@@ -1,6 +1,7 @@
 const microsoft=['Войдите в нужную учётную запись Microsoft.','В браузере откройте redeem.microsoft.com, введите 25-значный код и подтвердите активацию.','На Xbox откройте Microsoft Store → «Активировать код»; в Windows откройте Microsoft Store → меню профиля → «Активировать код».'];
 const ea=['Откройте ea.com/redeem и войдите в аккаунт EA.','Введите полученный код и подтвердите активацию.'];
 const guides={
+ 'Fortnite':['Перейдите на https://epicgames.com/redeem.','Введите PIN/код.','Войдите в аккаунт Epic Games, если потребуется, и подтвердите активацию.','Приобрести V-Bucks на баланс можно здесь: https://store.epicgames.com/collection/v-bucks'],
  'Arena Breakout':['Войдите на midasbuy.com и откройте пополнение Arena Breakout.','Введите ID игрока, откройте Redeem code, введите код и подтвердите.'],
  'ExitLag':['Войдите на сайте ExitLag и откройте My Account.','Выберите Prepaid Codes, введите код и нажмите Activate Code.'],
  'GearUP Booster PC':['В приложении GearUP нажмите «Код / Купон».','Введите ключ и нажмите Redeem / Activate.'],

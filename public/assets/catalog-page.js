@@ -3,7 +3,7 @@ import {priceLists} from './price-list.js?v=4';
 import {buildPricedCatalog} from './catalog-priced.js?v=6';
 import {displayProductName} from './catalog-product.js?v=3';
 import {createCatalogCart} from './catalog-cart.js?v=1';
-import {getActivationGuide} from './activation-guides.js?v=3';
+import {getActivationGuide} from './activation-guides.js?v=4';
 import {isAutoDelivery} from './auto-topup.js?v=2';
 import {flagForRegion} from './region-flags.js?v=2';
 const $=selector=>document.querySelector(selector);
@@ -34,7 +34,7 @@ else{
  for(const index of indexes){if(!current.children||!Number.isSafeInteger(index)||!current.children[index]){valid=false;break}current=current.children[index];ancestors.push(current)}
  addCrumb(label,indexes.length?url([]):null,indexes.length===0);
  ancestors.forEach((entry,i)=>addCrumb(displayRegion(entry.label),i<ancestors.length-1?url(indexes.slice(0,i+1)):null,i===ancestors.length-1));
- const steps=getActivationGuide(name,ancestors.map(x=>x.label));if(steps){const details=document.createElement('details');details.className='activation-guide';const summary=document.createElement('summary');summary.textContent='Инструкция по активации';const list=document.createElement('ol');for(const step of steps){const item=document.createElement('li');item.textContent=step;list.append(item)}details.append(summary,list);$('.catalog-panel').append(details);}
+ const steps=getActivationGuide(name,ancestors.map(x=>x.label));if(steps){const details=document.createElement('details');details.className='activation-guide';const summary=document.createElement('summary');summary.textContent='Инструкция по активации';const list=document.createElement('ol');for(const step of steps){const item=document.createElement('li');const parts=step.split(/(https:\/\/[^\s]+)/g);for(const part of parts){if(part.startsWith('https://')){const trailing=part.endsWith('.')?'.':'';const link=document.createElement('a');link.href=trailing?part.slice(0,-1):part;link.textContent=link.href;link.target='_blank';link.rel='noopener noreferrer';item.append(link,trailing)}else item.append(document.createTextNode(part))}list.append(item)}details.append(summary,list);$('.catalog-panel').append(details);}
  const back=$('#back-link');back.href=indexes.length?url(indexes.slice(0,-1)):'/home?'+new URLSearchParams({fromProduct:name})+'#catalog';back.textContent='← Назад';$('#footer-back').href=back.href;
  if(!valid){$('#page-title').textContent='Раздел не найден';$('#subtitle').textContent='Возможно, ссылка устарела.';$('#empty').hidden=false;$('#empty').textContent='Вернись на предыдущую страницу и выбери вариант.'}
  else if(current.pending||!current.children?.length){
