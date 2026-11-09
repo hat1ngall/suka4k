@@ -65,6 +65,14 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
     const result = await pool.query('SELECT u.id, u.email, u.nickname, u.bonus_balance, u.purchase_blocked FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = $1 AND s.expires_at > NOW()', [tokenHash(token)]);
     return res.json({ user: result.rows[0] || null });
   }));
+  app.get('/api/orders', wrap(async (req, res) => {
+    const token = req.cookies[COOKIE];
+    if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) return res.status(401).json({ error: 'Войдите, чтобы посмотреть заказы.' });
+    const session = await pool.query('SELECT u.id, u.email, u.nickname, u.bonus_balance, u.purchase_blocked FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = $1 AND s.expires_at > NOW()', [tokenHash(token)]);
+    if (!session.rows[0]) return res.status(401).json({ error: 'Войдите, чтобы посмотреть заказы.' });
+    const result = await pool.query('SELECT id, paid_at, rub_amount, bonus_amount FROM sales_orders WHERE user_id = $1 ORDER BY paid_at DESC LIMIT 100', [session.rows[0].id]);
+    res.json({ orders: result.rows });
+  }));
   app.post('/api/auth/logout', wrap(async (req, res) => {
     const token = req.cookies[COOKIE];
     if (typeof token === 'string' && /^[a-f0-9]{64}$/.test(token)) await pool.query('DELETE FROM sessions WHERE token_hash = $1', [tokenHash(token)]);

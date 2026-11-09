@@ -26,6 +26,7 @@ test('password hashes are salted, checked and invalid input is rejected', async 
 class FakePool {
   users = [];
   sessions = new Map();
+  orders = [];
   async query(sql, params = []) {
     if (sql.startsWith('INSERT INTO users')) {
       if (this.users.some(u => u.email === params[1])) throw Object.assign(new Error('duplicate'), {code: '23505'});
@@ -35,6 +36,7 @@ class FakePool {
     if (sql.startsWith('SELECT id, email, nickname, password_hash')) return {rows: this.users.filter(u => u.email === params[0])};
     if (sql.startsWith('INSERT INTO sessions')) { this.sessions.set(params[0], params[1]); return {rows: []}; }
     if (sql.startsWith('SELECT u.id, u.email')) { const u = this.users.find(x => x.id === this.sessions.get(params[0])); return {rows: u ? [{id:u.id,email:u.email,nickname:u.nickname}] : []}; }
+    if (sql.startsWith('SELECT id, paid_at, rub_amount, bonus_amount FROM sales_orders')) return {rows: this.orders.filter(o => o.user_id === params[0])};
     if (sql.startsWith('DELETE FROM sessions')) { this.sessions.delete(params[0]); return {rows: []}; }
     throw new Error(`Unexpected SQL: ${sql}`);
   }
@@ -56,6 +58,8 @@ async function scenario(pool) {
     assert.equal(res.status, 201);
     const created = await res.json(); assert.equal(created.user.email, 'a@example.test'); assert.equal(created.user.nickname, 'Player');
     const cookie = res.headers.get('set-cookie').split(';')[0];
+    assert.equal((await fetch(base + '/api/orders')).status, 401);
+    if (pool instanceof FakePool) {pool.orders.push({id:'own',user_id:created.user.id,paid_at:new Date(),rub_amount:10,bonus_amount:0},{id:'other',user_id:'other-user',paid_at:new Date(),rub_amount:999,bonus_amount:0});const orderResponse=await fetch(base+'/api/orders',{headers:{cookie}});assert.deepEqual((await orderResponse.json()).orders.map(o=>o.id),['own']);}
     assert.match(res.headers.get('set-cookie'), /HttpOnly/i);
     assert.match(res.headers.get('set-cookie'), /SameSite=Lax/i);
     assert.equal((await post('/api/auth/register', {email:'a@example.test',password:' pass word 123 ',nickname:'Player',consent:true})).status, 409);

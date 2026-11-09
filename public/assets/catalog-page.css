@@ -103,3 +103,9 @@ html[data-theme=dark] .page-header-copy,html[data-theme=dark] .page-header .subt
 @media(max-width:600px){.banner-scene.custom-banner:before{height:100%;bottom:0;top:auto}}
 
 .activation-guide a{color:var(--pink);text-decoration:underline;overflow-wrap:anywhere}
+
+.catalog-actions{display:flex;align-items:center;gap:10px;flex:none}.catalog-actions .donuts,.catalog-actions .catalog-cart-button{margin:0}.orders-link{display:grid;place-items:center;width:38px;height:38px;flex:none;border:1px solid var(--line);border-radius:50%;background:var(--soft);color:var(--ink)}.orders-link svg{width:18px;height:18px}html[data-theme=dark] .topbar .donuts{color:#fff!important}
+@media(max-width:760px){.topbar .catalog-actions{order:2;flex:0 0 100%;justify-content:space-between;gap:5px}.topbar .catalog-search-wrap{order:3}.topbar .catalog-actions>*{flex:none}.topbar .nav{gap:12px!important}.topbar .brand{font-size:23px}}
+@media(max-width:380px){.topbar .nav{gap:10px!important;font-size:11px!important}.topbar .catalog-actions .orders-link{width:32px;height:32px}}
+
+@media(max-width:760px){.topbar .catalog-actions .catalog-share{order:0}.topbar .catalog-actions .catalog-cart-button{order:1}.topbar .catalog-actions .orders-link{order:2}.topbar .catalog-actions .donuts{order:3}.topbar .catalog-actions .catalog-account{order:4}}
