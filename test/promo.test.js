@@ -9,11 +9,11 @@ class PromoPool {
     if (sql.startsWith('INSERT INTO admin_sessions')) { this.sessions.set(values[0], values[1]); return {rows: []}; }
     if (sql.startsWith('SELECT 1 FROM admin_sessions')) return {rows: this.sessions.get(values[0]) === values[1] ? [{}] : []};
     if (sql.startsWith('DELETE FROM admin_sessions')) { this.sessions.delete(values[0]); return {rows: []}; }
-    if (sql.startsWith('INSERT INTO promo_codes')) { if(this.promos.has(values[0])) throw Object.assign(new Error('duplicate'),{code:'23505'}); this.promos.set(values[0],{code:values[0],percent:values[1],active:true}); return {rows:[]}; }
+    if (sql.startsWith('INSERT INTO promo_codes')) { if(this.promos.has(values[0])) throw Object.assign(new Error('duplicate'),{code:'23505'}); this.promos.set(values[0],{code:values[0],percent:values[1],active:true,expires_at:values[2]}); return {rows:[]}; }
     if (sql.startsWith('SELECT code, percent, active')) return {rows:[...this.promos.values()]};
     if (sql.startsWith('DELETE FROM promo_codes')) { const p=this.promos.get(values[0]); this.promos.delete(values[0]); return {rows:p?[p]:[]}; }
     if (sql.startsWith('UPDATE promo_codes')) { const p=this.promos.get(values[0]); if(p)p.active=false; return {rows:p?[p]:[]}; }
-    if (sql.startsWith('SELECT code, percent FROM promo_codes')) { const p=this.promos.get(values[0]); return {rows:p?.active?[p]:[]}; }
+    if (sql.startsWith('SELECT code, percent FROM promo_codes')) { const p=this.promos.get(values[0]); return {rows:p?.active&&(!p.expires_at||new Date(p.expires_at)>new Date())?[p]:[]}; }
     throw new Error('Unexpected SQL: '+sql);
   }
 }
@@ -21,7 +21,7 @@ class PromoPool {
 test('promo codes require admin, reject cross-origin writes, validate and deactivate', async () => {
   const previous=process.env.ADMIN_PASSWORD;
   process.env.ADMIN_PASSWORD='testing-password-12345';
-  const server=createApp(new PromoPool()).listen(0,'127.0.0.1');
+  const pool=new PromoPool(),server=createApp(pool).listen(0,'127.0.0.1');
   await new Promise(resolve=>server.once('listening',resolve));
   const base=`http://127.0.0.1:${server.address().port}`;
   const post=(path,body,cookie,origin=base)=>fetch(base+path,{method:'POST',headers:{origin,'content-type':'application/json',...(cookie?{cookie}:{})},body:JSON.stringify(body)});
@@ -36,6 +36,11 @@ test('promo codes require admin, reject cross-origin writes, validate and deacti
     assert.equal((await post('/api/admin/promos',{code:'MUPPLE10',percent:101},cookie)).status,400);
     assert.equal((await post('/api/admin/promos',{code:'mupple10',percent:10},cookie)).status,201);
     assert.equal((await post('/api/admin/promos',{code:'MUPPLE10',percent:10},cookie)).status,409);
+    assert.equal((await post('/api/admin/promos',{code:'OLD',percent:10,expiresAt:'2000-01-01T00:00:00Z'},cookie)).status,400);
+    assert.equal((await post('/api/promo/check',{code:'mupple10',items:[{platform:'Steam'}]})).status,400);
+    assert.equal((await post('/api/promo/check',{code:'mupple10',paymentMethod:'bonus'})).status,400);
+    pool.promos.set('EXPIRED',{code:'EXPIRED',percent:10,active:true,expires_at:new Date('2000-01-01T00:00:00Z')});
+    assert.equal((await post('/api/promo/check',{code:'EXPIRED'})).status,404);
     const check=await post('/api/promo/check',{code:'mupple10'});assert.equal(check.status,200);assert.equal((await check.json()).percent,10);
     assert.equal((await post('/api/admin/promos/deactivate',{code:'MUPPLE10'},cookie)).status,200);
     assert.equal((await post('/api/promo/check',{code:'MUPPLE10'})).status,404);

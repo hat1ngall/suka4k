@@ -8,3 +8,5 @@
 @media(max-width:600px){main{padding:24px 4% 50px}.tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px}.tabs button{white-space:nowrap}.table-wrap{padding:8px 12px}.section-head{flex-wrap:wrap}}
 
 .admin-search{display:block;max-width:360px;margin:0 0 12px;color:var(--muted)}.admin-search input{display:block;margin-top:7px;background:var(--card)}
+
+.price-category,.price-group{border:1px solid var(--line);border-radius:12px;margin:8px 0;padding:12px}.price-category summary,.price-group summary{cursor:pointer;font-weight:800}.price-row{display:grid;grid-template-columns:minmax(150px,1fr) minmax(90px,130px) auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.price-row input{width:100%}@media(max-width:600px){.price-row{grid-template-columns:1fr 95px}.price-row button{grid-column:2}}

@@ -5,6 +5,9 @@ import { rateLimit } from 'express-rate-limit';
 import { createSessionToken, hashPassword, normalizeEmail, tokenHash, validPassword, verifyPassword } from './auth.js';
 import { resolve } from 'node:path';
 import { randomUUID, createHash, timingSafeEqual } from 'node:crypto';
+import {priceLists} from './public/assets/price-list.js';
+import {catalog} from './public/assets/catalog-data.js';
+import {buildPricedCatalog} from './public/assets/catalog-priced.js';
 const CATALOG_PRODUCTS = Object.freeze(['Fortnite','Valorant','PUBG Mobile','Xbox','PlayStation Store','Marvel Rivals','Roblox','Apple','Standoff 2','Minecraft','Google Play','Riot Games','Amazon','Netflix','Apex Legends','Electronic Arts','Battle.net','Steam Gifts','ExitLag','Telegram Stars','Nintendo','ChatGPT / OpenAI','Spotify','Free Fire','Steam','Honkai: Star Rail','Arena Breakout','GearUP Booster PC','Rockstar Games','Razer Gold','Rewarble','Eneba','League of Legends']);
 const COOKIE = 'voreq_session';
 const MAX_AGE = 30 * 24 * 60 * 60 * 1000;
@@ -111,15 +114,17 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
     res.json({ ok: true });
   }));
   app.get('/api/admin/promos', requireAdmin, wrap(async (req, res) => {
-    const result = await pool.query('SELECT code, percent, active, created_at FROM promo_codes ORDER BY created_at DESC');
+    const result = await pool.query('SELECT code, percent, active, created_at, expires_at FROM promo_codes ORDER BY created_at DESC');
     res.json({ promos: result.rows });
   }));
   app.post('/api/admin/promos', requireAdmin, wrap(async (req, res) => {
     const code = normalizePromo(req.body?.code);
     const percent = Number(req.body?.percent);
+    const expiresAt = req.body?.expiresAt == null || req.body.expiresAt === '' ? null : new Date(req.body.expiresAt);
+    if (expiresAt && (Number.isNaN(expiresAt.getTime()) || expiresAt <= new Date())) return res.status(400).json({error:'Укажите будущую дату окончания промокода.'});
     if (!validPromo(code) || !Number.isInteger(percent) || percent < 1 || percent > 100) return res.status(400).json({ error: 'Код: 3–32 латинских буквы, цифры, _ или -. Скидка: от 1 до 100%.' });
     try {
-      await pool.query('INSERT INTO promo_codes (code, percent) VALUES ($1, $2)', [code, percent]);
+      await pool.query('INSERT INTO promo_codes (code, percent, expires_at) VALUES ($1, $2, $3)', [code, percent, expiresAt]);
     } catch (error) {
       if (error.code === '23505') return res.status(409).json({ error: 'Такой промокод уже существует.' });
       throw error;
@@ -201,10 +206,15 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
     await pool.query('INSERT INTO catalog_prices (product_name, price_rub) VALUES ($1, $2) ON CONFLICT (product_name) DO UPDATE SET price_rub = EXCLUDED.price_rub, updated_at = NOW()', [name, price === null ? null : price.toFixed(2)]);
     res.json({ ok: true });
   }));
+  const knownPriceItem = (product, row) => Object.values(priceLists[product] || {}).some(entries => entries.some(entry => String(entry.sourceRow) === String(row)));
+  app.get('/api/catalog/item-prices', wrap(async (req,res)=>{const result=await pool.query('SELECT product_name, source_row, price_rub FROM catalog_item_prices');const paths=await pool.query('SELECT product_name, item_path, price_rub FROM catalog_path_prices');res.json({prices:result.rows,paths:paths.rows});}));
+  app.post('/api/admin/item-prices', requireAdmin, wrap(async (req,res)=>{const {product,sourceRow,price}=req.body||{};const numeric=Number(price);if(typeof product!=='string'||!Number.isSafeInteger(Number(sourceRow))||!knownPriceItem(product,sourceRow)||price===null||price===''||!Number.isFinite(numeric)||numeric<0||numeric>9999999999.99||Math.abs(Math.round(numeric*100)-numeric*100)>1e-6)return res.status(400).json({error:'Укажите существующий товар и корректную цену.'});await pool.query('INSERT INTO catalog_item_prices (product_name, source_row, price_rub) VALUES ($1,$2,$3) ON CONFLICT (product_name,source_row) DO UPDATE SET price_rub=EXCLUDED.price_rub, updated_at=NOW()', [product,Number(sourceRow),numeric.toFixed(2)]);res.json({ok:true});}));
+  app.post('/api/admin/path-prices', requireAdmin, wrap(async (req,res)=>{const {product,path,price}=req.body||{};const numeric=Number(price);if(typeof product!=='string'||!CATALOG_PRODUCTS.includes(product)||!Array.isArray(path)||!path.length||path.length>10||path.some(x=>typeof x!=='string'||x.length>200)||price===null||price===''||!Number.isFinite(numeric)||numeric<0||numeric>9999999999.99||Math.abs(Math.round(numeric*100)-numeric*100)>1e-6)return res.status(400).json({error:'Укажите существующий товар и корректную цену.'});let node=buildPricedCatalog(product,catalog[product],priceLists);for(const label of path)node=node?.children?.find(child=>child.label===label);if(!node||node.pending||node.children||node.sourceRow)return res.status(400).json({error:'Товар не найден.'});await pool.query('INSERT INTO catalog_path_prices (product_name,item_path,price_rub) VALUES ($1,$2,$3) ON CONFLICT (product_name,item_path) DO UPDATE SET price_rub=EXCLUDED.price_rub, updated_at=NOW()', [product,JSON.stringify(path),numeric.toFixed(2)]);res.json({ok:true});}));
   app.post('/api/promo/check', promoLimiter, wrap(async (req, res) => {
     const code = normalizePromo(req.body?.code);
+    if (req.body?.paymentMethod === 'bonus' || req.body?.paymentMethod === 'donuts' || (Array.isArray(req.body?.items) && req.body.items.length > 0 && req.body.items.every(item => /^steam(?:\b|\s)/i.test(String(item?.platform||''))))) return res.status(400).json({error:'Промокод не действует на Steam и оплату пончиками.'});
     if (!validPromo(code)) return res.status(400).json({ error: 'Промокод не найден.' });
-    const result = await pool.query('SELECT code, percent FROM promo_codes WHERE code = $1 AND active = TRUE', [code]);
+    const result = await pool.query('SELECT code, percent FROM promo_codes WHERE code = $1 AND active = TRUE AND (expires_at IS NULL OR expires_at > NOW())', [code]);
     if (!result.rows.length) return res.status(404).json({ error: 'Промокод не найден или больше не действует.' });
     res.json(result.rows[0]);
   }));

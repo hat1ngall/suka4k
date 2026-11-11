@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createApp} from '../app.js';
 import {verifyPassword} from '../auth.js';
 class AdminPool{
-  admin=new Map(); users=[{id:'user-1',email:'a@example.test',nickname:'Player',bonus_balance:'0.00',purchase_blocked:false}]; sessions=new Map([['old-session','user-1']]); prices=new Map();
+  admin=new Map(); users=[{id:'user-1',email:'a@example.test',nickname:'Player',bonus_balance:'0.00',purchase_blocked:false}]; sessions=new Map([['old-session','user-1']]); prices=new Map(); itemPrices=new Map();
   async query(sql,v=[]){
     if(sql.startsWith('INSERT INTO admin_sessions')){this.admin.set(v[0],v[1]);return {rows:[]}}
     if(sql.startsWith('SELECT 1 FROM admin_sessions'))return {rows:this.admin.get(v[0])===v[1]?[{}]:[]};
@@ -14,6 +14,10 @@ class AdminPool{
     if(sql.startsWith('UPDATE users SET purchase_blocked')){const u=this.users.find(x=>x.id===v[0]);if(u)u.purchase_blocked=v[1];return {rows:u?[u]:[]}}
     if(sql.startsWith('UPDATE users SET bonus_balance')){const u=this.users.find(x=>x.id===v[0]);if(u)u.bonus_balance=v[1];return {rows:u?[u]:[]}}
     if(sql.startsWith('WITH changed AS (UPDATE users SET password_hash')){const u=this.users.find(x=>x.id===v[0]);if(u){u.password_hash=v[1];for(const [key,id] of this.sessions)if(id===u.id)this.sessions.delete(key)}return {rows:u?[{id:u.id}]:[]}}
+    if(sql.startsWith('SELECT product_name, item_path, price_rub'))return {rows:[]};
+    if(sql.startsWith('INSERT INTO catalog_path_prices'))return {rows:[]};
+    if(sql.startsWith('SELECT product_name, source_row, price_rub'))return {rows:[...this.itemPrices.values()]};
+    if(sql.startsWith('INSERT INTO catalog_item_prices')){this.itemPrices.set(v[0]+':'+v[1],{product_name:v[0],source_row:v[1],price_rub:v[2]});return {rows:[]}}
     if(sql.startsWith('SELECT product_name, price_rub'))return {rows:[...this.prices.values()]};
     if(sql.startsWith('INSERT INTO catalog_prices')){this.prices.set(v[0],{product_name:v[0],price_rub:v[1]});return {rows:[]}}
     throw Error('Unexpected SQL: '+sql);
@@ -36,6 +40,7 @@ test('admin user controls and prices require authorization and validate updates'
   assert.equal((await post('/api/admin/prices',{name:'not a product',price:500},cookie)).status,400);
   assert.equal((await post('/api/admin/prices',{name:'Fortnite',price:499.5},cookie)).status,200);
   const prices=await(await fetch(base+'/api/catalog/prices')).json();assert.equal(prices.products.find(p=>p.name==='Fortnite').price_rub,'499.50');
+  assert.equal((await post('/api/admin/item-prices',{product:'Fortnite',sourceRow:2,price:777},cookie)).status,200);assert.equal((await post('/api/admin/item-prices',{product:'Fortnite',sourceRow:999999,price:777},cookie)).status,400);const itemPrices=await(await fetch(base+'/api/catalog/item-prices')).json();assert.equal(itemPrices.prices[0].price_rub,'777.00');assert.equal((await post('/api/admin/path-prices',{product:'Fortnite',path:['Россия','Набор «Час расплаты»'],price:123},cookie)).status,200);assert.equal((await post('/api/admin/path-prices',{product:'Fortnite',path:['Несуществующий'],price:123},cookie)).status,400);
   const stats=await(await fetch(base+'/api/admin/stats',{headers:{cookie}})).json();assert.equal(stats.registered_users,1);assert.equal(stats.orders_available,false);assert.equal(stats.series.length,7);const day=await(await fetch(base+'/api/admin/stats?period=day',{headers:{cookie}})).json();assert.equal(day.series.length,1);const month=await(await fetch(base+'/api/admin/stats?period=month',{headers:{cookie}})).json();assert.equal(month.series.length,30);
   const users=await(await fetch(base+'/api/admin/users',{headers:{cookie}})).json();assert.equal(users.users.length,1);
  }finally{await new Promise(r=>server.close(r));if(previous===undefined)delete process.env.ADMIN_PASSWORD;else process.env.ADMIN_PASSWORD=previous}
