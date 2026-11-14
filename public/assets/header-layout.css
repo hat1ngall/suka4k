@@ -1,0 +1,13 @@
+/* Keep search and actions in separate tracks on every storefront page. */
+@media (min-width:1200px){
+  .topbar.storefront-header,.secondary-page .topbar.storefront-header{display:grid;grid-template-columns:auto auto minmax(0,1fr) max-content;align-items:center;column-gap:clamp(12px,1.5vw,24px)}
+  .topbar.storefront-header > .search,.topbar.storefront-header > .catalog-search-wrap{position:relative;left:auto;transform:none;grid-column:auto;grid-row:auto;width:min(100%,340px);min-width:0;margin:0;justify-self:center}
+  .topbar.storefront-header > .nav-right,.topbar.storefront-header > .catalog-actions{grid-column:auto;grid-row:auto;min-width:max-content;margin:0;justify-self:end}
+}
+@media (min-width:761px) and (max-width:1199px){
+  .topbar.storefront-header,.secondary-page .topbar.storefront-header{height:auto;display:grid;grid-template-columns:minmax(0,1fr) max-content;gap:12px;padding-top:12px;padding-bottom:12px}
+  .topbar.storefront-header > .brand-group{grid-column:1;grid-row:1}
+  .topbar.storefront-header > .nav{grid-column:2;grid-row:1}
+  .topbar.storefront-header > .search,.topbar.storefront-header > .catalog-search-wrap{position:relative;left:auto;transform:none;grid-column:1;grid-row:2;width:100%;min-width:0;margin:0}
+  .topbar.storefront-header > .nav-right,.topbar.storefront-header > .catalog-actions{grid-column:2;grid-row:2;min-width:max-content;margin:0}
+}
