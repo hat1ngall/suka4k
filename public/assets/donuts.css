@@ -13,3 +13,7 @@
 #donut-products .donut-product small{color:#a33b70}
 html[data-theme="dark"] #donut-products .donut-product{background:linear-gradient(145deg,#382437,#231c2b)}
 html[data-theme="dark"] #donut-products .donut-product small{color:#f4b3d5}
+.donut-navigation{margin:0 0 22px}.donut-navigation a{display:inline-block;margin-bottom:14px;color:var(--pink);font-weight:800}.donut-navigation a[hidden]{display:none}.donut-navigation h3{margin:0;font-size:24px;overflow-wrap:anywhere}
+#donut-products .donut-category{text-decoration:none;color:var(--ink);min-height:230px}
+#donut-products .donut-category h3{margin-top:0}
+.donut-category img{align-self:flex-start}.donut-category-action{margin-top:auto;font-weight:800;color:var(--pink)}
