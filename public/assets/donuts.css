@@ -1,0 +1,15 @@
+.bonus-program{margin:24px 0 30px;padding:18px 20px;border:1px solid var(--line);border-radius:16px;background:var(--paper);line-height:1.65}
+.catalog:has(#donut-products) .section-caption{max-width:650px}
+.bonus-program summary{cursor:pointer;font-weight:800;color:var(--pink)}
+.bonus-program li{margin:8px 0}.bonus-program p{margin:12px 0}
+#donut-products{grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+#donut-products .donut-product{display:flex;flex-direction:column;gap:12px;padding:22px;min-width:0}
+#donut-products .donut-product h3{font-size:22px;margin:18px 0 0}
+#donut-products .donut-product .donut-price{color:var(--ink);font-size:17px;font-weight:900;margin:8px 0}
+#donut-products .donut-product .primary{position:relative;z-index:1;margin-top:auto;justify-content:center;width:100%}
+#donut-products .donut-product:after{pointer-events:none;opacity:.4}
+#donut-products .donut-product{background:linear-gradient(145deg,#fffafd,#fce8f3);border-color:var(--line);color:var(--ink)}
+#donut-products .donut-product h3,#donut-products .donut-product p{max-width:100%;text-shadow:none;color:var(--ink)}
+#donut-products .donut-product small{color:#a33b70}
+html[data-theme="dark"] #donut-products .donut-product{background:linear-gradient(145deg,#382437,#231c2b)}
+html[data-theme="dark"] #donut-products .donut-product small{color:#f4b3d5}

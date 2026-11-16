@@ -28,6 +28,7 @@ class FakePool {
   sessions = new Map();
   orders = [];
   async query(sql, params = []) {
+    if(sql.startsWith('SELECT expire_user_bonuses'))return {rows:[]};
     if (sql.startsWith('INSERT INTO users')) {
       if (this.users.some(u => u.email === params[1])) throw Object.assign(new Error('duplicate'), {code: '23505'});
       const user = {id: params[0], email: params[1], password_hash: params[2], nickname: params[3]};
@@ -87,6 +88,6 @@ test('HTTP auth lifecycle against isolated PostgreSQL schema', {skip: !process.e
   const admin = new pg.Pool({connectionString: process.env.TEST_DATABASE_URL});
   await admin.query(`CREATE SCHEMA "${schema}"`);
   const pool = new pg.Pool({connectionString: process.env.TEST_DATABASE_URL, options: `-c search_path=${schema}`});
-  try { await pool.query(await readFile(new URL('../schema.sql', import.meta.url), 'utf8')); await scenario(pool); }
+  try { await pool.query(await readFile(new URL('../schema.sql', import.meta.url), 'utf8')); await pool.query(await readFile(new URL('../bonus.sql', import.meta.url), 'utf8')); await scenario(pool); }
   finally { await pool.end(); await admin.query(`DROP SCHEMA "${schema}" CASCADE`); await admin.end(); }
 });

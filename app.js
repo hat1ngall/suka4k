@@ -33,6 +33,11 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
   const cookieOptions = { httpOnly: true, secure: production, sameSite: 'lax', path: '/', maxAge: MAX_AGE };
   const sendError = (res, error) => { console.error('Auth request failed:', error); res.status(500).json({ error: 'Ошибка сервера. Попробуйте позже.' }); };
   const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(error => sendError(res, error));
+  // Expire due lots before returning a balance, even between hourly cleanups.
+  app.use(['/api/auth/login', '/api/auth/me', '/api/orders', '/api/admin/users'], wrap(async (req, res, next) => {
+    await pool.query("SELECT expire_user_bonuses(user_id) FROM (SELECT DISTINCT user_id FROM bonus_lots WHERE remaining > 0 AND expires_at <= NOW() ORDER BY user_id) expired");
+    next();
+  }));
   const issueSession = async (res, user) => {
     const token = createSessionToken();
     await pool.query('INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, NOW() + INTERVAL \'30 days\')', [tokenHash(token), user.id]);

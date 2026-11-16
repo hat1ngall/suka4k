@@ -11,3 +11,7 @@
   .topbar.storefront-header > .search,.topbar.storefront-header > .catalog-search-wrap{position:relative;left:auto;transform:none;grid-column:1;grid-row:2;width:100%;min-width:0;margin:0}
   .topbar.storefront-header > .nav-right,.topbar.storefront-header > .catalog-actions{grid-column:2;grid-row:2;min-width:max-content;margin:0}
 }
+
+/* Use the same order control on every storefront page. */
+html:not([data-theme="dark"]) .topbar.storefront-header .orders-link{background:#fffafd;color:#38283e;border-color:#ead9e4}
+html[data-theme="dark"] .topbar.storefront-header .orders-link{background:#262229;color:#fff;border-color:#504953}

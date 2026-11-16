@@ -5,8 +5,8 @@ const labels=xs=>xs.map(x=>x.label);
 const choice=(node,label)=>node.children.find(x=>x.label===label);
 test('catalog contains the specified regional and product selection paths',()=>{
  assert.equal(allProducts.length,34);
- assert.deepEqual(labels(catalog.Fortnite.children),['Россия','Украина']);
- assert.equal(choice(catalog.Fortnite,'Россия').children.length,10);
+ assert.deepEqual(labels(catalog.Fortnite.children),['Украина']);
+ assert.equal(choice(catalog.Fortnite,'Украина').children.length,10);
  assert.deepEqual(labels(choice(catalog.Valorant,'Турция').children),['325 VP','825 VP','1700 VP','2925 VP','4325 VP','8900 VP']);
  const mobile=choice(catalog['PUBG Mobile'],'PUBG Mobile');
  const global=choice(mobile,'Global');

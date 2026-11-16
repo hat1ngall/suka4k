@@ -5,6 +5,7 @@ import {verifyPassword} from '../auth.js';
 class AdminPool{
   admin=new Map(); users=[{id:'user-1',email:'a@example.test',nickname:'Player',bonus_balance:'0.00',purchase_blocked:false}]; sessions=new Map([['old-session','user-1']]); prices=new Map(); itemPrices=new Map();
   async query(sql,v=[]){
+    if(sql.startsWith('SELECT expire_user_bonuses'))return {rows:[]};
     if(sql.startsWith('INSERT INTO admin_sessions')){this.admin.set(v[0],v[1]);return {rows:[]}}
     if(sql.startsWith('SELECT 1 FROM admin_sessions'))return {rows:this.admin.get(v[0])===v[1]?[{}]:[]};
     if(sql.startsWith('SELECT COUNT(*)::integer AS recorded_orders'))return {rows:[{recorded_orders:0,orders_today:0,rub_today:'0',bonus_today:'0',bonus_orders_today:0}]};
@@ -40,7 +41,7 @@ test('admin user controls and prices require authorization and validate updates'
   assert.equal((await post('/api/admin/prices',{name:'not a product',price:500},cookie)).status,400);
   assert.equal((await post('/api/admin/prices',{name:'Fortnite',price:499.5},cookie)).status,200);
   const prices=await(await fetch(base+'/api/catalog/prices')).json();assert.equal(prices.products.find(p=>p.name==='Fortnite').price_rub,'499.50');
-  assert.equal((await post('/api/admin/item-prices',{product:'Fortnite',sourceRow:2,price:777},cookie)).status,200);assert.equal((await post('/api/admin/item-prices',{product:'Fortnite',sourceRow:999999,price:777},cookie)).status,400);const itemPrices=await(await fetch(base+'/api/catalog/item-prices')).json();assert.equal(itemPrices.prices[0].price_rub,'777.00');assert.equal((await post('/api/admin/path-prices',{product:'Fortnite',path:['Россия','Набор «Час расплаты»'],price:123},cookie)).status,200);assert.equal((await post('/api/admin/path-prices',{product:'Fortnite',path:['Несуществующий'],price:123},cookie)).status,400);
+  assert.equal((await post('/api/admin/item-prices',{product:'Fortnite',sourceRow:2,price:777},cookie)).status,200);assert.equal((await post('/api/admin/item-prices',{product:'Fortnite',sourceRow:999999,price:777},cookie)).status,400);const itemPrices=await(await fetch(base+'/api/catalog/item-prices')).json();assert.equal(itemPrices.prices[0].price_rub,'777.00');assert.equal((await post('/api/admin/path-prices',{product:'Fortnite',path:['Украина','Набор «Час расплаты»'],price:123},cookie)).status,200);assert.equal((await post('/api/admin/path-prices',{product:'Fortnite',path:['Несуществующий'],price:123},cookie)).status,400);
   const stats=await(await fetch(base+'/api/admin/stats',{headers:{cookie}})).json();assert.equal(stats.registered_users,1);assert.equal(stats.orders_available,false);assert.equal(stats.series.length,7);const day=await(await fetch(base+'/api/admin/stats?period=day',{headers:{cookie}})).json();assert.equal(day.series.length,1);const month=await(await fetch(base+'/api/admin/stats?period=month',{headers:{cookie}})).json();assert.equal(month.series.length,30);
   const users=await(await fetch(base+'/api/admin/users',{headers:{cookie}})).json();assert.equal(users.users.length,1);
  }finally{await new Promise(r=>server.close(r));if(previous===undefined)delete process.env.ADMIN_PASSWORD;else process.env.ADMIN_PASSWORD=previous}

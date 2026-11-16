@@ -13,7 +13,7 @@ const ucCis=items([60,325,660,1800,3850,8100,16200,24300],' UC');
 const countries=s=>s.split('|').map(x=>x.trim());
 const giftRegions=countries('Турция|Америка|ЮАР|Бразилия|Европа|Саудовская Аравия|Великобритания|Гонконг|Польша');
 const catalog={
- 'Fortnite':{heading:'Выбери регион',children:regions(['Россия','Украина'],fortnite)},
+ 'Fortnite':{heading:'Выбери регион',children:regions(['Украина'],fortnite)},
  'Valorant':{heading:'Выбери регион',children:[...regions(['Россия','Украина','Беларусь'],vp),branch('Турция',items([325,825,1700,2925,4325,8900],' VP')),branch('Европа',items([240,475,1000,1520,1750,2050,2575,3650,5350,8700,11000],' VP'))]},
  'PUBG Mobile':{title:'PUBG',heading:'Выбери игру',children:[branch('PUBG Mobile',[branch('Global',[branch('Коды',ucCodes),branch('Автопополнение',ucGlobal)]),branch('СНГ',ucCis)]),branch('PUBG: Battlegrounds',items([100,510,1050,2700,5500,11200],' G-Coins'))]},
  'Xbox':{heading:'Выбери категорию',children:[branch('Подарочная карта',incompleteRegions(giftRegions)),branch('Подписка Xbox',incompleteRegions(countries('Индия|Япония|Америка|Европа|Бразилия|Турция|Великобритания|Мексика')))]},

@@ -12,7 +12,7 @@ test('new prices stay in the requested sections',()=>{
  const fortnite=buildPricedCatalog('Fortnite',catalog.Fortnite,priceLists);
  const gift=choose(fortnite,'Fortnite Gift Card');
  assert.ok(choose(gift,'Европа').children.some(item=>item.priceRub===1149));
- assert.ok(choose(fortnite,'Россия'));
+ assert.equal(choose(fortnite,'Россия'),undefined);
  const exitlag=buildPricedCatalog('ExitLag',catalog.ExitLag,priceLists);
  assert.ok(choose(exitlag,'Tier 1').children.some(item=>item.priceRub===739));
  for(const name of ['Honkai: Star Rail']){
