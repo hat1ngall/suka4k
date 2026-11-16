@@ -12,48 +12,8 @@ try {
     const item = Object.values(priceLists[row.product_name] || {}).flat().find(item => item.sourceRow === row.source_row);
     if (item) item.priceRub = Number(row.price_rub);
   }
-  const products = buildDonutProducts(priceLists);
-  const categoryOf = item => item.sourceRow === 84 ? 'PUBG: Battlegrounds' : item.platform;
-  const categories = [...new Set(products.map(categoryOf))];
-  const navigation = document.createElement('div');
-  navigation.className = 'donut-navigation';
-  const back = document.createElement('a');
-  back.href = '#';
-  back.textContent = '← Все игры';
-  const heading = document.createElement('h3');
-  heading.tabIndex = -1;
-  navigation.append(back, heading);
-  list.before(navigation);
-
-  function render(focus = false) {
-    let selected;
-    try { selected = decodeURIComponent(location.hash.slice(1)); } catch { selected = ''; }
-    const category = categories.includes(selected) ? selected : '';
-    back.hidden = !category;
-    heading.textContent = category || 'Выбери игру';
-    list.replaceChildren();
-    if (!category) {
-      for (const name of categories) {
-        const card = document.createElement('a');
-        card.className = 'product donut-product donut-category';
-        card.href = '#' + encodeURIComponent(name);
-        const icon = document.createElement('img');
-        icon.src = '/assets/category-game.svg';
-        icon.alt = '';
-        icon.width = 56;
-        icon.height = 56;
-        const title = document.createElement('h3');
-        title.textContent = name;
-        const count = document.createElement('p');
-        count.textContent = 'Вариантов: ' + products.filter(item => categoryOf(item) === name).length;
-        const action = document.createElement('span');
-        action.className = 'donut-category-action';
-        action.textContent = 'Выбрать →';
-        card.append(icon, title, count, action);
-        list.append(card);
-      }
-    }
-    for (const item of products.filter(item => categoryOf(item) === category)) {
+  list.replaceChildren();
+  for (const item of buildDonutProducts(priceLists)) {
     const card = document.createElement('article');
     card.className = 'product donut-product';
     const game = document.createElement('small');
@@ -75,11 +35,7 @@ try {
     });
     card.append(game, title, region, price, button);
     list.append(card);
-    }
-    if (focus) heading.focus({preventScroll:true});
   }
-  window.addEventListener('hashchange', () => render(true));
-  render();
 } catch {
   list.textContent = 'Не удалось загрузить актуальные цены. Обнови страницу, чтобы попробовать снова.';
 }
