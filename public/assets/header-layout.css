@@ -15,3 +15,9 @@
 /* Use the same order control on every storefront page. */
 html:not([data-theme="dark"]) .topbar.storefront-header .orders-link{background:#fffafd;color:#38283e;border-color:#ead9e4}
 html[data-theme="dark"] .topbar.storefront-header .orders-link{background:#262229;color:#fff;border-color:#504953}
+
+/* Shared dark surfaces, independent of each page's paper/line variables. */
+html[data-theme="dark"] .topbar.storefront-header{background:#100e12!important;border-color:#252128!important}
+html[data-theme="dark"] .topbar.storefront-header :is(.pill,.donuts,.orders-link,.catalog-cart-button,.catalog-share,.social-button){background:#262229!important;border-color:#504953!important;color:#fff!important;box-shadow:none}
+html[data-theme="dark"] .topbar.storefront-header :is(.search,.catalog-search){background:#222027!important;border-color:#4e4852!important;color:#c0aabb!important}
+html[data-theme="dark"] .topbar.storefront-header :is(.catalog-account,.account-button){background:#e32f81!important;border-color:#e32f81!important;color:#fff!important}

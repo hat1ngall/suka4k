@@ -1,3 +1,4 @@
+import {createProductArt} from './product-art.js?v=1';
 import {applyItemPrices,applyPathPrices} from './item-prices.js?v=2';
 import {catalog,allProducts} from './catalog-data.js?v=7';
 import {priceLists} from './price-list.js?v=4';
@@ -56,11 +57,7 @@ else{
    current.children.forEach((option,index)=>{
     if(!option.pending&&!option.children){
      const card=document.createElement('article');card.className='catalog-product';
-     const picture=document.createElement('div');picture.className='catalog-product-art';picture.setAttribute('aria-hidden','true');
-     if(customImages[name]){picture.classList.add('custom-product-art');picture.style.setProperty('--custom-art',`url(/assets/category-${customImages[name]}.png?v=5)`)}
-     picture.style.setProperty('--product-icon',`url(/assets/${/подпис|pass|netflix|spotify/i.test(name+' '+option.label)?'category-subscription.svg':/gift|карт|steam|xbox|apple|google/i.test(name+' '+option.label)?'category-topup.svg':'category-game.svg'})`);
-     picture.style.setProperty('--image',`url(/assets/catalog-cinematic-${Math.floor(scene/6)+1}.png)`);picture.style.setProperty('--x',`${(scene%2)*100}%`);picture.style.setProperty('--y',`${Math.floor((scene%6)/2)*50}%`);picture.style.setProperty('--ratio',Math.floor(scene/6)===1?'2.25':'2.665');
-     const content=document.createElement('div');content.className='catalog-product-content';const productTitle=document.createElement('h2');const productName=displayProductName(name,option,ancestors.map(x=>x.label));productTitle.textContent=productName;
+     const content=document.createElement('div');content.className='catalog-product-content';const productTitle=document.createElement('h2');const productName=displayProductName(name,option,ancestors.map(x=>x.label));productTitle.textContent=productName;const picture=createProductArt(label,productName,ancestors.map(x=>displayRegion(x.label)).join(' · '));
      const price=document.createElement('p');price.className='catalog-product-price';price.textContent=option.priceRub!=null?Number(option.priceRub).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽':'Цена уточняется';
      const add=document.createElement('button');add.type='button';add.className='catalog-product-add';add.textContent=option.priceRub!=null?'В корзину':'Скоро';add.disabled=option.priceRub==null;
      const auto=isAutoDelivery(name,ancestors.map(x=>x.label));if(auto&&option.priceRub!=null)add.textContent='К пополнению';

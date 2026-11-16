@@ -1,3 +1,4 @@
+import {createProductArt} from './product-art.js?v=1';
 import {addToCart} from './secondary-header.js?v=1';
 import {priceLists} from './price-list.js?v=4';
 import {buildDonutProducts} from './donuts-data.js';
@@ -24,7 +25,17 @@ try {
     region.textContent = item.region;
     const price = document.createElement('p');
     price.className = 'donut-price';
-    price.textContent = item.bonusAmount.toLocaleString('ru-RU') + ' Donuts + 1 ₽';
+    const bonus = document.createElement('span');
+    bonus.className = 'donut-price-bonus';
+    const icon = document.createElement('img');
+    icon.src = '/assets/donut-cartoon.png';
+    icon.alt = 'Donuts';
+    icon.width = 26;
+    icon.height = 26;
+    bonus.append(item.bonusAmount.toLocaleString('ru-RU') + ' ', icon);
+    const rubles = document.createElement('span');
+    rubles.textContent = '+ 1 ₽';
+    price.append(bonus, rubles);
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'primary';
@@ -33,7 +44,10 @@ try {
       button.disabled = true;
       try { await addToCart(item); } finally { button.disabled = false; }
     });
-    card.append(game, title, region, price, button);
+    const content = document.createElement('div');
+    content.className = 'donut-product-content';
+    content.append(game, title, region, price, button);
+    card.append(createProductArt(game.textContent, item.productName, item.region), content);
     list.append(card);
   }
 } catch {

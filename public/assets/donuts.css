@@ -13,3 +13,11 @@
 #donut-products .donut-product small{color:#a33b70}
 html[data-theme="dark"] #donut-products .donut-product{background:linear-gradient(145deg,#382437,#231c2b)}
 html[data-theme="dark"] #donut-products .donut-product small{color:#f4b3d5}
+#donut-products .donut-product{padding:0;gap:0;overflow:hidden}
+#donut-products .donut-product-content{display:flex;flex-direction:column;gap:12px;padding:20px;flex:1}
+#donut-products .donut-product h3{margin:0;font-size:18px}
+#donut-products .donut-product .donut-price{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:4px 0 8px}
+.donut-price-bonus{display:inline-flex;align-items:center;gap:5px;color:#e32f81}
+.donut-price-bonus img{display:block;object-fit:contain;width:26px;height:26px}
+#donut-products .donut-product .primary{border-radius:12px;min-height:44px;box-shadow:none}
+#donut-products .mupple-product-art{flex:none}
