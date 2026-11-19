@@ -1,5 +1,5 @@
 import {applyItemPrices} from './item-prices.js?v=2';
-import {priceLists} from './price-list.js?v=5';
+import {priceLists} from './price-list.js?v=6';
 import {displayProductName} from './catalog-product.js?v=3';
 import {autoItems} from './auto-topup.js?v=2';
 await applyItemPrices(priceLists);

@@ -28,3 +28,13 @@ newPrices['Steam Gifts'] ||= {};
 for (const [index,region] of ['Аргентина','Бразилия','Канада','Чили','Китай','Гонконг','Индия','Япония','Казахстан','Россия','ЮАР','Турция','Украина','Америка'].entries()) {
  newPrices['Steam Gifts']['Steam Автореги · '+region] = [{label:'Steam авто-регистрация · '+region,priceRub:49,sourceRow:41000+index}];
 }
+
+// PlayStation prices from the supplied workbook, retail-price column.
+newPrices['PlayStation Store'] ||= {};
+for(const [region,currency,items] of [
+ ['Великобритания','GBP',[[10,1299],[20,2499],[40,4999],[50,6349],[70,8429],[100,11999],[120,14399],[150,19429],[200,24449]]],
+ ['Индонезия','IDR',[[100000,549],[225000,1279],[300000,1699],[600000,3449],[1000000,5749],[1500000,8599]]]
+]) {
+ const start=region==='Великобритания'?42000:42009;
+ newPrices['PlayStation Store'][region]=items.map(([amount,priceRub],i)=>({label:`ps ${region} ${amount} ${currency}`,priceRub,sourceRow:start+i}));
+}

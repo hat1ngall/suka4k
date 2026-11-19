@@ -5,7 +5,7 @@ const pending=label=>({label,pending:true});
 const items=(values,suffix='')=>values.map(value=>item(String(value)+suffix));
 const regions=(names,children)=>names.map(name=>branch(name,children));
 const incompleteRegions=names=>names.map(pending);
-const fortnite=items(['800 В-баксов','2400 В-баксов','4500 В-баксов','13500 В-баксов','Набор «Час расплаты»','Набор «Идеальная стратегия»','Набор «Бинты и уши»','Набор «Искусный взлом»','Набор «Легенды аниме»','Набор «Отряд Fortnite»']);
+const fortnite=items(['800 В-баксов','2400 В-баксов','4500 В-баксов','12500 В-баксов','Набор «Час расплаты»','Набор «Идеальная стратегия»','Набор «Бинты и уши»','Набор «Искусный взлом»','Набор «Легенды аниме»','Набор «Отряд Fortnite»']);
 const vp=items([240,325,475,1000,1520,1750,2050,2575,3650,5350,8700,11000],' VP');
 const ucGlobal=items([60,325,660,1800,3850,8100,16200,24300,32800,40500],' UC');
 const ucCodes=items([60,325,660,1800,3850,8100,16200,24300,32400,40500],' UC');

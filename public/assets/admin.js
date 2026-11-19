@@ -1,7 +1,7 @@
-import {priceLists} from './price-list.js?v=5';
+import {priceLists} from './price-list.js?v=6';
 import {displayProductName} from './catalog-product.js?v=3';
 import {applyItemPrices,applyPathPrices} from './item-prices.js?v=2';
-import {catalog,allProducts} from './catalog-data.js?v=7';
+import {catalog,allProducts} from './catalog-data.js?v=8';
 import {buildPricedCatalog} from './catalog-priced.js?v=6';
 'use strict';
 const $=s=>document.querySelector(s), loginPanel=$('#login-panel'),adminPanel=$('#admin-panel'),message=$('#global-message');

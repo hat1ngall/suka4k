@@ -1,7 +1,7 @@
 // Prices are resolved from the same source rows as the regular catalog.
 export const donutSelections = [
-  ['Fortnite',2,'1000 В-баксов','Турция'],
-  ['Fortnite',6,'1000 В-баксов','Украина'],
+  ['Fortnite',2,'800 В-баксов','Турция'],
+  ['Fortnite',6,'800 В-баксов','Украина'],
   ['Roblox',691,'300 Robux','Global'],
   ['Valorant',32,'1000 VP','Украина'],
   ['Valorant',55,'1000 VP','Беларусь'],

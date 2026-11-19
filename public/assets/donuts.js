@@ -1,7 +1,7 @@
 import {createProductArt} from './product-art.js?v=2';
 import {addToCart} from './secondary-header.js?v=1';
-import {priceLists} from './price-list.js?v=5';
-import {buildDonutProducts} from './donuts-data.js';
+import {priceLists} from './price-list.js?v=6';
+import {buildDonutProducts} from './donuts-data.js?v=2';
 
 const list = document.querySelector('#donut-products');
 try {

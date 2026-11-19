@@ -34,3 +34,6 @@ html[data-theme="dark"] .topbar.storefront-header .theme-toggle{background:#3b26
 .topbar.storefront-header :is(.search,.catalog-search) input{min-width:0;width:100%;border:0;outline:0;background:transparent;color:inherit;font:inherit;font-size:13px}
 .topbar.storefront-header :is(.search,.catalog-search) input::placeholder{color:#ad9ba9;opacity:1}
 html[data-theme="dark"] .topbar.storefront-header :is(.search,.catalog-search) input::placeholder{color:#a994a7}
+
+/* Keep the icon visible on the light thumb in dark mode. */
+html[data-theme="dark"] .topbar.storefront-header .theme-toggle svg:last-child{color:#6c415e!important;stroke:#6c415e!important}
