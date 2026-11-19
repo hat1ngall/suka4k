@@ -38,6 +38,8 @@ test('promo codes require admin, reject cross-origin writes, validate and deacti
     assert.equal((await post('/api/admin/promos',{code:'MUPPLE10',percent:10},cookie)).status,409);
     assert.equal((await post('/api/admin/promos',{code:'OLD',percent:10,expiresAt:'2000-01-01T00:00:00Z'},cookie)).status,400);
     assert.equal((await post('/api/promo/check',{code:'mupple10',items:[{platform:'Steam'}]})).status,400);
+    assert.equal((await post('/api/promo/check',{code:'mupple10',items:[{platform:'Fortnite',productName:'800 В-баксов'},{platform:'Steam',productName:''}]})).status,400);
+    assert.equal((await post('/api/promo/check',{code:'mupple10',items:[{platform:'Steam',productName:'Подарочная карта'}]})).status,200);
     assert.equal((await post('/api/promo/check',{code:'mupple10',paymentMethod:'bonus'})).status,400);
     pool.promos.set('EXPIRED',{code:'EXPIRED',percent:10,active:true,expires_at:new Date('2000-01-01T00:00:00Z')});
     assert.equal((await post('/api/promo/check',{code:'EXPIRED'})).status,404);

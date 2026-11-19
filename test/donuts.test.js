@@ -42,7 +42,15 @@ test('bonus SQL: thresholds, expiry, FIFO, insufficient funds, duplicate orders 
     await exec(sql);
     await exec(sql);
     assert.equal(await balance(),10);
-    const pay = (id,rub,bonus=0) => db.query('INSERT INTO sales_orders(id,user_id,rub_amount,bonus_amount) VALUES($1,$2,$3,$4)',[id,'u',rub,bonus]);
+    const pay = (id,rub,bonus=0,eligible=rub) => db.query('INSERT INTO sales_orders(id,user_id,rub_amount,bonus_amount,bonus_eligible_rub) VALUES($1,$2,$3,$4,$5)',[id,'u',rub,bonus,eligible]);
+    await pay('steam-only',2000,0,0);
+    assert.equal(await balance(),10);
+    await pay('mixed',2000,0,499);
+    assert.equal(await balance(),24);
+    await db.query("DELETE FROM bonus_lots WHERE order_id IN ('steam-only','mixed')");
+    await db.query("UPDATE users SET bonus_balance=10 WHERE id='u'");
+    await pay('missing-eligible',2000,0,null);
+    assert.equal(await balance(),10);
     await pay('small',499);
     assert.equal(await balance(),24);
     await pay('edge',999.99);

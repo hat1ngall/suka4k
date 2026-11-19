@@ -186,7 +186,7 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
   }));
   app.post('/api/admin/users/:id/bonus', requireAdmin, wrap(async (req, res) => {
     const value = req.body?.balance;
-    if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 999999999999.99 || Math.abs(value * 100 - Math.round(value * 100)) > 1e-6) return res.status(400).json({ error: 'Укажите неотрицательный баланс с точностью до двух знаков.' });
+    if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0 || value > 999999999999) return res.status(400).json({ error: 'Укажите целое неотрицательное количество пончиков.' });
     const result = await pool.query('UPDATE users SET bonus_balance = $2 WHERE id = $1 RETURNING id, bonus_balance', [req.params.id, value.toFixed(2)]);
     if (!result.rows.length) return res.status(404).json({ error: 'Пользователь не найден.' });
     res.json({ user: result.rows[0] });

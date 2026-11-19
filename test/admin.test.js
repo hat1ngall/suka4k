@@ -35,7 +35,8 @@ test('admin user controls and prices require authorization and validate updates'
   assert.equal((await post('/api/admin/users/user-1/block',{blocked:true},cookie)).status,200);assert.equal(pool.users[0].purchase_blocked,true);
   assert.equal((await post('/api/admin/users/user-1/bonus',{balance:-1},cookie)).status,400);
   assert.equal((await post('/api/admin/users/user-1/bonus',{balance:12.345},cookie)).status,400);
-  assert.equal((await post('/api/admin/users/user-1/bonus',{balance:12.5},cookie)).status,200);assert.equal(pool.users[0].bonus_balance,'12.50');
+  assert.equal((await post('/api/admin/users/user-1/bonus',{balance:12.5},cookie)).status,400);
+  assert.equal((await post('/api/admin/users/user-1/bonus',{balance:12},cookie)).status,200);assert.equal(pool.users[0].bonus_balance,'12.00');
   assert.equal((await post('/api/admin/users/user-1/password',{password:'short'},cookie)).status,400);
   assert.equal((await post('/api/admin/users/user-1/password',{password:'new-password-123'},cookie)).status,200);assert.equal(await verifyPassword('new-password-123',pool.users[0].password_hash),true);assert.equal(pool.sessions.size,0);
   assert.equal((await post('/api/admin/prices',{name:'not a product',price:500},cookie)).status,400);

@@ -60,7 +60,8 @@ BEGIN
     -- Redemption spends oldest lots first and never earns new bonuses.
     UPDATE users SET bonus_balance = bonus_balance - NEW.bonus_amount WHERE id = NEW.user_id;
   ELSE
-    eligible := COALESCE(NEW.bonus_eligible_rub, NEW.rub_amount);
+    -- An unspecified eligible amount must never award bonuses accidentally.
+    eligible := COALESCE(NEW.bonus_eligible_rub, 0);
     award := FLOOR(eligible * CASE WHEN eligible >= 1000 THEN 0.05 ELSE 0.03 END);
     INSERT INTO bonus_lots(user_id, order_id, remaining, expires_at)
     VALUES (NEW.user_id, NEW.id, CASE WHEN NEW.paid_at + INTERVAL '180 days' > NOW() THEN award ELSE 0 END,
