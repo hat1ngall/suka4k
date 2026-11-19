@@ -37,3 +37,6 @@ html[data-theme="dark"] .topbar.storefront-header :is(.search,.catalog-search) i
 
 /* Keep the icon visible on the light thumb in dark mode. */
 html[data-theme="dark"] .topbar.storefront-header .theme-toggle svg:last-child{color:#6c415e!important;stroke:#6c415e!important}
+
+/* Keep the logo divider consistent between the storefront pages. */
+.topbar.storefront-header .brand-group .brand{border-right-color:#e4cedb}
