@@ -1,3 +1,6 @@
+-- Payment integration must supply the paid amount excluding Steam auto top-ups.
+ALTER TABLE sales_orders ADD COLUMN IF NOT EXISTS bonus_eligible_rub NUMERIC(14,2) CHECK (bonus_eligible_rub >= 0 AND bonus_eligible_rub <= rub_amount);
+
 -- Lots retain the expiry of each individual award; balance remains compatible
 -- with the existing account/admin API. Migration never re-awards historic sales.
 CREATE TABLE IF NOT EXISTS bonus_lots (
@@ -47,7 +50,7 @@ BEGIN
 END $$;
 
 CREATE OR REPLACE FUNCTION apply_paid_order_bonuses() RETURNS trigger LANGUAGE plpgsql AS $$
-DECLARE available NUMERIC; award NUMERIC;
+DECLARE available NUMERIC; award NUMERIC; eligible NUMERIC;
 BEGIN
   IF NEW.user_id IS NULL THEN RETURN NEW; END IF;
   PERFORM expire_user_bonuses(NEW.user_id);
@@ -57,7 +60,8 @@ BEGIN
     -- Redemption spends oldest lots first and never earns new bonuses.
     UPDATE users SET bonus_balance = bonus_balance - NEW.bonus_amount WHERE id = NEW.user_id;
   ELSE
-    award := ROUND(NEW.rub_amount * CASE WHEN NEW.rub_amount >= 1000 THEN 0.05 ELSE 0.03 END, 2);
+    eligible := COALESCE(NEW.bonus_eligible_rub, NEW.rub_amount);
+    award := FLOOR(eligible * CASE WHEN eligible >= 1000 THEN 0.05 ELSE 0.03 END);
     INSERT INTO bonus_lots(user_id, order_id, remaining, expires_at)
     VALUES (NEW.user_id, NEW.id, CASE WHEN NEW.paid_at + INTERVAL '180 days' > NOW() THEN award ELSE 0 END,
       NEW.paid_at + INTERVAL '180 days');

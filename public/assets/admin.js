@@ -1,4 +1,4 @@
-import {priceLists} from './price-list.js?v=4';
+import {priceLists} from './price-list.js?v=5';
 import {displayProductName} from './catalog-product.js?v=3';
 import {applyItemPrices,applyPathPrices} from './item-prices.js?v=2';
 import {catalog,allProducts} from './catalog-data.js?v=7';

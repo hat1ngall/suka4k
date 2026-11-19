@@ -11,7 +11,7 @@ test('new prices stay in the requested sections',()=>{
  assert.equal(priceLists['Zenless Zone Zero'],undefined);
  const fortnite=buildPricedCatalog('Fortnite',catalog.Fortnite,priceLists);
  const gift=choose(fortnite,'Fortnite Gift Card');
- assert.ok(choose(gift,'Европа').children.some(item=>item.priceRub===1149));
+ assert.ok(choose(gift,'Европа').children.some(item=>item.priceRub===1139));
  assert.equal(choose(fortnite,'Россия'),undefined);
  const exitlag=buildPricedCatalog('ExitLag',catalog.ExitLag,priceLists);
  assert.ok(choose(exitlag,'Tier 1').children.some(item=>item.priceRub===739));

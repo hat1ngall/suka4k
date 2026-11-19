@@ -21,3 +21,9 @@ html[data-theme="dark"] .topbar.storefront-header{background:#100e12!important;b
 html[data-theme="dark"] .topbar.storefront-header :is(.pill,.donuts,.orders-link,.catalog-cart-button,.catalog-share,.social-button){background:#262229!important;border-color:#504953!important;color:#fff!important;box-shadow:none}
 html[data-theme="dark"] .topbar.storefront-header :is(.search,.catalog-search){background:#222027!important;border-color:#4e4852!important;color:#c0aabb!important}
 html[data-theme="dark"] .topbar.storefront-header :is(.catalog-account,.account-button){background:#e32f81!important;border-color:#e32f81!important;color:#fff!important}
+
+/* Shared controls across storefront pages. */
+.topbar.storefront-header .theme-toggle{background:#f7e1ee!important;border-color:#d6b7ca!important;color:#79465f!important}
+html[data-theme="dark"] .topbar.storefront-header .theme-toggle{background:#3b2638!important;border-color:#76576e!important;color:#f8e3f3!important}
+.topbar.storefront-header :is(.search,.catalog-search){height:44px;border-radius:25px;padding:0 14px}
+.topbar.storefront-header :is(.search input,.catalog-search input){font-size:13px}
