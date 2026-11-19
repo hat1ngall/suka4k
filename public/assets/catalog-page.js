@@ -1,4 +1,4 @@
-import {createProductArt} from './product-art.js?v=1';
+import {createProductArt} from './product-art.js?v=2';
 import {applyItemPrices,applyPathPrices} from './item-prices.js?v=2';
 import {catalog,allProducts} from './catalog-data.js?v=7';
 import {priceLists} from './price-list.js?v=4';
@@ -57,7 +57,7 @@ else{
    current.children.forEach((option,index)=>{
     if(!option.pending&&!option.children){
      const card=document.createElement('article');card.className='catalog-product';
-     const content=document.createElement('div');content.className='catalog-product-content';const productTitle=document.createElement('h2');const productName=displayProductName(name,option,ancestors.map(x=>x.label));productTitle.textContent=productName;const picture=createProductArt(label,productName,ancestors.map(x=>displayRegion(x.label)).join(' · '));
+     const content=document.createElement('div');content.className='catalog-product-content';const productTitle=document.createElement('h2');const productName=displayProductName(name,option,ancestors.map(x=>x.label));productTitle.textContent=productName;const picture=createProductArt(product,productName,ancestors.map(x=>displayRegion(x.label)).join(' · '));
      const price=document.createElement('p');price.className='catalog-product-price';price.textContent=option.priceRub!=null?Number(option.priceRub).toLocaleString('ru-RU',{maximumFractionDigits:2})+' ₽':'Цена уточняется';
      const add=document.createElement('button');add.type='button';add.className='catalog-product-add';add.textContent=option.priceRub!=null?'В корзину':'Скоро';add.disabled=option.priceRub==null;
      const auto=isAutoDelivery(name,ancestors.map(x=>x.label));if(auto&&option.priceRub!=null)add.textContent='К пополнению';

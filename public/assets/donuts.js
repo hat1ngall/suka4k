@@ -1,4 +1,4 @@
-import {createProductArt} from './product-art.js?v=1';
+import {createProductArt} from './product-art.js?v=2';
 import {addToCart} from './secondary-header.js?v=1';
 import {priceLists} from './price-list.js?v=4';
 import {buildDonutProducts} from './donuts-data.js';
