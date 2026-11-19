@@ -27,3 +27,10 @@ html[data-theme="dark"] .topbar.storefront-header :is(.catalog-account,.account-
 html[data-theme="dark"] .topbar.storefront-header .theme-toggle{background:#3b2638!important;border-color:#76576e!important;color:#f8e3f3!important}
 .topbar.storefront-header :is(.search,.catalog-search){height:44px;border-radius:25px;padding:0 14px}
 .topbar.storefront-header :is(.search input,.catalog-search input){font-size:13px}
+
+/* Identical search controls on home and secondary pages. */
+.topbar.storefront-header :is(.search,.catalog-search){display:flex;align-items:center;gap:10px;border:1px solid #dbc2d1;background:#fffafd;color:#ab96a5}
+.topbar.storefront-header :is(.search,.catalog-search) svg{width:17px;height:17px;flex:none}
+.topbar.storefront-header :is(.search,.catalog-search) input{min-width:0;width:100%;border:0;outline:0;background:transparent;color:inherit;font:inherit;font-size:13px}
+.topbar.storefront-header :is(.search,.catalog-search) input::placeholder{color:#ad9ba9;opacity:1}
+html[data-theme="dark"] .topbar.storefront-header :is(.search,.catalog-search) input::placeholder{color:#a994a7}
