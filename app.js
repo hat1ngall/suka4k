@@ -42,7 +42,7 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
     const token = createSessionToken();
     await pool.query('INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, NOW() + INTERVAL \'30 days\')', [tokenHash(token), user.id]);
     res.cookie(COOKIE, token, cookieOptions);
-    return { id: user.id, email: user.email, nickname: user.nickname ?? null, bonus_balance: user.bonus_balance ?? 0 };
+    return { id: user.id, email: user.email, nickname: user.nickname ?? null, bonus_balance: user.bonus_balance ?? 0, orders_count: Number(user.orders_count || 0) };
   };
   app.get('/api/health', wrap(async (req, res) => { await pool.query('SELECT 1'); res.json({ ok: true }); }));
   app.post('/api/auth/register', authLimiter, wrap(async (req, res) => {
@@ -62,7 +62,7 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
     const email = normalizeEmail(req.body?.email);
     const password = req.body?.password;
     if (!email || !validPassword(password)) return res.status(401).json({ error: 'Неверная почта или пароль.' });
-    const result = await pool.query('SELECT id, email, nickname, password_hash, bonus_balance FROM users WHERE email = $1', [email]);
+    const result = await pool.query('SELECT id, email, nickname, password_hash, bonus_balance, (SELECT COUNT(*)::integer FROM sales_orders WHERE sales_orders.user_id = users.id) AS orders_count FROM users WHERE email = $1', [email]);
     const user = result.rows[0];
     if (!(await verifyPassword(password, user?.password_hash || DUMMY_HASH)) || !user) return res.status(401).json({ error: 'Неверная почта или пароль.' });
     return res.json({ user: await issueSession(res, user) });
@@ -70,16 +70,22 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
   app.get('/api/auth/me', wrap(async (req, res) => {
     const token = req.cookies[COOKIE];
     if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) return res.json({ user: null });
-    const result = await pool.query('SELECT u.id, u.email, u.nickname, u.bonus_balance, u.purchase_blocked FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = $1 AND s.expires_at > NOW()', [tokenHash(token)]);
-    return res.json({ user: result.rows[0] || null });
+    const result = await pool.query('SELECT u.id, u.email, u.nickname, u.bonus_balance, u.purchase_blocked, (SELECT COUNT(*)::integer FROM sales_orders o WHERE o.user_id = u.id) AS orders_count FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = $1 AND s.expires_at > NOW()', [tokenHash(token)]);
+    const user = result.rows[0] ? { ...result.rows[0], orders_count: Number(result.rows[0].orders_count || 0) } : null;
+    return res.json({ user });
   }));
   app.get('/api/orders', wrap(async (req, res) => {
     const token = req.cookies[COOKIE];
     if (typeof token !== 'string' || !/^[a-f0-9]{64}$/.test(token)) return res.status(401).json({ error: 'Войдите, чтобы посмотреть заказы.' });
     const session = await pool.query('SELECT u.id, u.email, u.nickname, u.bonus_balance, u.purchase_blocked FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = $1 AND s.expires_at > NOW()', [tokenHash(token)]);
     if (!session.rows[0]) return res.status(401).json({ error: 'Войдите, чтобы посмотреть заказы.' });
-    const result = await pool.query('SELECT id, paid_at, rub_amount, bonus_amount FROM sales_orders WHERE user_id = $1 ORDER BY paid_at DESC LIMIT 100', [session.rows[0].id]);
-    res.json({ orders: result.rows });
+    const offset = Math.max(0, Math.min(1000000, Number.parseInt(req.query.offset, 10) || 0));
+    const limit = Math.max(1, Math.min(200, Number.parseInt(req.query.limit, 10) || 50));
+    const countResult = await pool.query('SELECT COUNT(*)::integer AS total FROM sales_orders WHERE user_id = $1', [session.rows[0].id]);
+    const result = await pool.query('SELECT id, paid_at, rub_amount, bonus_amount, status, description FROM sales_orders WHERE user_id = $1 ORDER BY paid_at DESC, id DESC LIMIT $2 OFFSET $3', [session.rows[0].id, limit + 1, offset]);
+    const has_more = result.rows.length > limit;
+    const orders = result.rows.slice(0, limit);
+    res.json({ orders, total: Number(countResult.rows[0]?.total ?? orders.length), has_more, offset, limit });
   }));
   app.post('/api/auth/logout', wrap(async (req, res) => {
     const token = req.cookies[COOKIE];

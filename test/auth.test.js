@@ -34,10 +34,22 @@ class FakePool {
       const user = {id: params[0], email: params[1], password_hash: params[2], nickname: params[3]};
       this.users.push(user); return {rows: [user]};
     }
-    if (sql.startsWith('SELECT id, email, nickname, password_hash')) return {rows: this.users.filter(u => u.email === params[0])};
+    if (sql.startsWith('SELECT id, email, nickname, password_hash')) {
+      return {rows: this.users.filter(u => u.email === params[0]).map(u => ({...u, orders_count: this.orders.filter(o => o.user_id === u.id).length}))};
+    }
     if (sql.startsWith('INSERT INTO sessions')) { this.sessions.set(params[0], params[1]); return {rows: []}; }
-    if (sql.startsWith('SELECT u.id, u.email')) { const u = this.users.find(x => x.id === this.sessions.get(params[0])); return {rows: u ? [{id:u.id,email:u.email,nickname:u.nickname}] : []}; }
-    if (sql.startsWith('SELECT id, paid_at, rub_amount, bonus_amount FROM sales_orders')) return {rows: this.orders.filter(o => o.user_id === params[0])};
+    if (sql.startsWith('SELECT u.id, u.email')) {
+      const u = this.users.find(x => x.id === this.sessions.get(params[0]));
+      return {rows: u ? [{id:u.id,email:u.email,nickname:u.nickname,bonus_balance:u.bonus_balance??0,orders_count:this.orders.filter(o => o.user_id === u.id).length}] : []};
+    }
+    if (sql.startsWith('SELECT COUNT(*)::integer AS total FROM sales_orders')) {
+      return {rows: [{total: this.orders.filter(o => o.user_id === params[0]).length}]};
+    }
+    if (sql.startsWith('SELECT id, paid_at, rub_amount, bonus_amount')) {
+      const mine = this.orders.filter(o => o.user_id === params[0]).sort((a, b) => new Date(b.paid_at) - new Date(a.paid_at));
+      const limit = params[1] ?? 51, offset = params[2] ?? 0;
+      return {rows: mine.slice(offset, offset + limit)};
+    }
     if (sql.startsWith('DELETE FROM sessions')) { this.sessions.delete(params[0]); return {rows: []}; }
     throw new Error(`Unexpected SQL: ${sql}`);
   }
@@ -57,10 +69,26 @@ async function scenario(pool) {
     assert.equal((await post('/api/auth/register', {email:'a@example.test', password:' pass word 123 ', nickname:'X', consent:true})).status, 400);
     let res = await post('/api/auth/register', {email:'A@example.test', password:' pass word 123 ', nickname:'Player', consent:true});
     assert.equal(res.status, 201);
-    const created = await res.json(); assert.equal(created.user.email, 'a@example.test'); assert.equal(created.user.nickname, 'Player');
+    const created = await res.json(); assert.equal(created.user.email, 'a@example.test'); assert.equal(created.user.nickname, 'Player'); assert.equal(created.user.orders_count, 0);
     const cookie = res.headers.get('set-cookie').split(';')[0];
     assert.equal((await fetch(base + '/api/orders')).status, 401);
-    if (pool instanceof FakePool) {pool.orders.push({id:'own',user_id:created.user.id,paid_at:new Date(),rub_amount:10,bonus_amount:0},{id:'other',user_id:'other-user',paid_at:new Date(),rub_amount:999,bonus_amount:0});const orderResponse=await fetch(base+'/api/orders',{headers:{cookie}});assert.deepEqual((await orderResponse.json()).orders.map(o=>o.id),['own']);}
+    if (pool instanceof FakePool) {
+      pool.orders.push(
+        {id:'older',user_id:created.user.id,paid_at:new Date('2025-01-10T10:00:00Z'),rub_amount:150,bonus_amount:0,status:'completed',description:'Steam 150 ₽'},
+        {id:'own',user_id:created.user.id,paid_at:new Date('2026-11-20T10:00:00Z'),rub_amount:10,bonus_amount:0,status:'paid',description:null},
+        {id:'other',user_id:'other-user',paid_at:new Date(),rub_amount:999,bonus_amount:0,status:'paid',description:null}
+      );
+      const orderResponse=await fetch(base+'/api/orders?limit=1&offset=0',{headers:{cookie}});
+      const page1=await orderResponse.json();
+      assert.deepEqual(page1.orders.map(o=>o.id),['own']);
+      assert.equal(page1.total,2);
+      assert.equal(page1.has_more,true);
+      const page2=await (await fetch(base+'/api/orders?limit=1&offset=1',{headers:{cookie}})).json();
+      assert.deepEqual(page2.orders.map(o=>o.id),['older']);
+      assert.equal(page2.has_more,false);
+      const meWithOrders=await (await fetch(base+'/api/auth/me',{headers:{cookie}})).json();
+      assert.equal(meWithOrders.user.orders_count,2);
+    }
     assert.match(res.headers.get('set-cookie'), /HttpOnly/i);
     assert.match(res.headers.get('set-cookie'), /SameSite=Lax/i);
     assert.equal((await post('/api/auth/register', {email:'a@example.test',password:' pass word 123 ',nickname:'Player',consent:true})).status, 409);

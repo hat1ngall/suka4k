@@ -1,14 +1,47 @@
 import {applyItemPrices} from './item-prices.js?v=2';
-import {priceLists} from './price-list.js?v=6';
+import {priceLists} from './price-list.js?v=7';
 import {displayProductName} from './catalog-product.js?v=3';
 import {autoItems} from './auto-topup.js?v=2';
-await applyItemPrices(priceLists);
-const form=document.querySelector('#topup'),platform=document.querySelector('#platform'),amount=document.querySelector('#amount');
+const form=document.querySelector('#topup'),platform=document.querySelector('#platform'),region=document.querySelector('#region'),amount=document.querySelector('#amount');
 if(form&&platform&&amount){
+ const pickers=[];
+ function registerPicker(picker){
+  pickers.push(picker);
+  picker.addEventListener('toggle',()=>{if(picker.open)for(const other of pickers)if(other!==picker)other.open=false});
+ }
+ function enhanceSelect(selectEl){
+  if(!selectEl||selectEl.dataset.enhanced==='1')return null;
+  selectEl.dataset.enhanced='1';
+  selectEl.hidden=true;selectEl.setAttribute('aria-hidden','true');selectEl.tabIndex=-1;
+  const picker=document.createElement('details');picker.className='auto-picker auto-picker-select';
+  const summary=document.createElement('summary');
+  const panel=document.createElement('div');panel.className='auto-picker-panel auto-picker-list';
+  const buttons=[];
+  for(const option of selectEl.options){
+   const button=document.createElement('button');button.type='button';button.className='auto-picker-option';button.dataset.value=option.value;button.textContent=option.textContent;
+   button.addEventListener('click',()=>{selectEl.value=option.value;sync();picker.open=false;summary.focus();selectEl.dispatchEvent(new Event('change',{bubbles:true}))});
+   buttons.push(button);panel.append(button);
+  }
+  function sync(){
+   const current=selectEl.selectedOptions[0]||selectEl.options[0];
+   summary.textContent=current?current.textContent:'';
+   for(const button of buttons)button.setAttribute('aria-pressed',String(button.dataset.value===selectEl.value));
+  }
+  selectEl.addEventListener('change',sync);
+  const labelEl=selectEl.id?form.querySelector(`label[for="${selectEl.id}"]`):null;
+  if(labelEl)labelEl.addEventListener('click',e=>{e.preventDefault();picker.open=!picker.open;summary.focus()});
+  picker.append(summary,panel);selectEl.after(picker);registerPicker(picker);sync();
+  return picker;
+ }
+ enhanceSelect(platform);
+ enhanceSelect(region);
+ document.addEventListener('click',e=>{for(const p of pickers)if(p.open&&!p.contains(e.target)&&!e.target.closest('label[for="platform"],label[for="region"]'))p.open=false});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')for(const p of pickers)if(p.open){p.open=false;p.querySelector('summary')?.focus()}});
+ await applyItemPrices(priceLists);
  const field=document.createElement('div');field.className='field';field.id='auto-product-field';field.hidden=true;
  const label=document.createElement('span');label.className='auto-product-label';label.textContent='Товар';
  const select=document.createElement('select');select.id='auto-product';select.hidden=true;select.setAttribute('aria-hidden','true');select.tabIndex=-1;
- const picker=document.createElement('details');picker.className='auto-picker';const summary=document.createElement('summary');summary.textContent='Выберите товар';const panel=document.createElement('div');panel.className='auto-picker-panel';picker.append(summary,panel);field.append(label,select,picker);document.querySelector('#stars-field').before(field);
+ const picker=document.createElement('details');picker.className='auto-picker';const summary=document.createElement('summary');summary.textContent='Выберите товар';const panel=document.createElement('div');panel.className='auto-picker-panel';picker.append(summary,panel);field.append(label,select,picker);document.querySelector('#stars-field').before(field);registerPicker(picker);
  const amounts=document.querySelector('.amounts'),amountLabel=document.querySelector('label[for="amount"]'),hint=document.querySelector('#amount-hint');
  let items=[],wasGame=false;
  function choose(){

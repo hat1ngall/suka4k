@@ -49,6 +49,9 @@ CREATE TABLE IF NOT EXISTS sales_orders (
   CHECK (rub_amount > 0 OR bonus_amount > 0)
 );
 CREATE INDEX IF NOT EXISTS sales_orders_paid_at_idx ON sales_orders(paid_at);
+CREATE INDEX IF NOT EXISTS sales_orders_user_id_paid_at_idx ON sales_orders(user_id, paid_at DESC);
+ALTER TABLE sales_orders ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'paid';
+ALTER TABLE sales_orders ADD COLUMN IF NOT EXISTS description TEXT;
 
 ALTER TABLE promo_codes ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ;
 CREATE TABLE IF NOT EXISTS catalog_item_prices (product_name TEXT NOT NULL, source_row INTEGER NOT NULL, price_rub NUMERIC(12,2) NOT NULL CHECK(price_rub >= 0), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), PRIMARY KEY(product_name,source_row));

@@ -156,4 +156,9 @@ html[data-theme="dark"] .secondary-page .catalog,html[data-theme="dark"] .second
 @media(min-width:761px){.topbar .search{position:absolute;left:50%;transform:translateX(-50%)}}@media(max-width:760px){.topbar .search{position:relative;left:auto;transform:none}}
 html:not([data-theme="dark"]) .topbar .nav-right .pill{background:#fffafd}.topbar .orders-link{background:var(--paper)}html[data-theme="dark"] .topbar .orders-link{background:#262229}
 .auth-brand-panel{position:relative}.auth-brand-panel:after{content:"";display:block;position:absolute;left:8%;right:8%;top:24%;height:44%;background:url('/assets/hero-mascot-cutout.png') center/contain no-repeat;pointer-events:none}
+.auth-dialog.is-account .auth-brand-panel:after,.auth-dialog:has(#auth-user:not([hidden])) .auth-brand-panel:after{display:none}
 @media(max-width:600px){.auth-brand-panel:after{display:none}}
+
+/* Keep the search and action buttons in separate header columns. */
+@media(min-width:1101px){.topbar:has(> .nav-right){display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:center;column-gap:clamp(12px,1.5vw,26px)}.topbar:has(> .nav-right) > .search{position:relative;left:auto;transform:none;width:min(100%,370px);min-width:0;justify-self:center}.topbar:has(> .nav-right) > .nav-right{margin-left:0;justify-self:end}}
+@media(min-width:761px) and (max-width:1100px){.topbar:has(> .nav-right){height:auto;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding-top:12px;padding-bottom:12px}.topbar:has(> .nav-right) > .brand-group{grid-column:1;grid-row:1}.topbar:has(> .nav-right) > .nav{grid-column:2;grid-row:1}.topbar:has(> .nav-right) > .search{grid-column:1;grid-row:2;position:relative;left:auto;transform:none;width:100%;min-width:0}.topbar:has(> .nav-right) > .nav-right{grid-column:2;grid-row:2;margin-left:0}}
