@@ -153,7 +153,7 @@ let cart=[];try{const stored=JSON.parse(localStorage.getItem('mupple-cart')||'[]
 function notify(message){const toast=document.querySelector('#toast');toast.textContent=message;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),4000)}
 function saveCart(){try{localStorage.setItem('mupple-cart',JSON.stringify(cart))}catch(e){}renderCart()}
 let appliedPromo=null;
-const currencySigns={RUB:'₽',KZT:'₸',UAH:'₴'};
+const currencySigns={RUB:'₽',KZT:'₸',UAH:'₴',DONUTS:'Donuts'};
 function itemCurrency(item){if(item.currency&&currencySigns[item.currency])return item.currency;if(item.region&&item.region.includes('KZT'))return 'KZT';if(item.region&&item.region.includes('UAH'))return 'UAH';return 'RUB'}
 function money(value,currency){return value.toLocaleString('ru-RU',{maximumFractionDigits:2})+' '+currencySigns[currency]}
 const isSteamTopup=item=>item.platform==='Steam'&&!item.productName;

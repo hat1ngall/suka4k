@@ -82,7 +82,7 @@ export function createApp(pool, { production = process.env.NODE_ENV === 'product
     const offset = Math.max(0, Math.min(1000000, Number.parseInt(req.query.offset, 10) || 0));
     const limit = Math.max(1, Math.min(200, Number.parseInt(req.query.limit, 10) || 50));
     const countResult = await pool.query('SELECT COUNT(*)::integer AS total FROM sales_orders WHERE user_id = $1', [session.rows[0].id]);
-    const result = await pool.query('SELECT id, paid_at, rub_amount, bonus_amount, status, description FROM sales_orders WHERE user_id = $1 ORDER BY paid_at DESC, id DESC LIMIT $2 OFFSET $3', [session.rows[0].id, limit + 1, offset]);
+    const result = await pool.query('SELECT id, paid_at, rub_amount, bonus_amount, status, description, items FROM sales_orders WHERE user_id = $1 ORDER BY paid_at DESC, id DESC LIMIT $2 OFFSET $3', [session.rows[0].id, limit + 1, offset]);
     const has_more = result.rows.length > limit;
     const orders = result.rows.slice(0, limit);
     res.json({ orders, total: Number(countResult.rows[0]?.total ?? orders.length), has_more, offset, limit });

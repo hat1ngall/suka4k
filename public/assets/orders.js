@@ -1,3 +1,6 @@
+import { addToCart } from './secondary-header.js?v=3';
+import { buildRepeatCartItems } from './repeat-order.js?v=1';
+
 const list = document.querySelector('#orders-list');
 const summary = document.querySelector('#orders-summary');
 const PAGE_SIZE = 50;
@@ -25,12 +28,24 @@ function renderOrder(order) {
   status.textContent = formatStatus(order.status);
   head.append(title, status);
   row.append(head);
+
+  const repeatItems = buildRepeatCartItems(order);
   if (order.description) {
     const desc = document.createElement('p');
     desc.className = 'order-desc';
     desc.textContent = order.description;
     row.append(desc);
+  } else if (Array.isArray(order.items) && order.items.length) {
+    const desc = document.createElement('p');
+    desc.className = 'order-desc';
+    desc.textContent = repeatItems.map(item => item.productName ? item.platform + ' · ' + item.productName : item.platform).join(', ');
+    if (desc.textContent) row.append(desc);
   }
+
+  const foot = document.createElement('div');
+  foot.className = 'order-row-foot';
+  const meta = document.createElement('div');
+  meta.className = 'order-meta';
   const date = document.createElement('p');
   const parsed = new Date(order.paid_at);
   date.textContent = Number.isNaN(parsed.getTime()) ? '' : parsed.toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
@@ -40,8 +55,35 @@ function renderOrder(order) {
     Number(order.rub_amount) > 0 ? formatAmount(order.rub_amount) + ' ₽' : null,
     Number(order.bonus_amount) > 0 ? formatAmount(order.bonus_amount) + ' Donuts' : null
   ].filter(Boolean).join(' + ');
-  if (date.textContent) row.append(date);
-  if (total.textContent) row.append(total);
+  if (date.textContent) meta.append(date);
+  if (total.textContent) meta.append(total);
+  foot.append(meta);
+
+  if (repeatItems.length) {
+    const repeat = document.createElement('button');
+    repeat.type = 'button';
+    repeat.className = 'order-repeat';
+    repeat.textContent = 'Повторить заказ';
+    repeat.addEventListener('click', async () => {
+      repeat.disabled = true;
+      try {
+        const notice = repeatItems.length > 1
+          ? 'Заказ добавлен в корзину (' + repeatItems.length + ')'
+          : 'Заказ добавлен в корзину';
+        const ok = await addToCart(repeatItems, notice);
+        if (ok) {
+          repeat.textContent = 'В корзине ✓';
+          clearTimeout(repeat._timer);
+          repeat._timer = setTimeout(() => { repeat.textContent = 'Повторить заказ'; }, 1600);
+        }
+      } finally {
+        repeat.disabled = false;
+      }
+    });
+    foot.append(repeat);
+  }
+
+  row.append(foot);
   return row;
 }
 
@@ -97,4 +139,4 @@ async function loadOrders(append = false) {
   }
 }
 
-loadOrders(false);
+if (list) loadOrders(false);

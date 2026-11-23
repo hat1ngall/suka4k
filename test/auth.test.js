@@ -74,9 +74,9 @@ async function scenario(pool) {
     assert.equal((await fetch(base + '/api/orders')).status, 401);
     if (pool instanceof FakePool) {
       pool.orders.push(
-        {id:'older',user_id:created.user.id,paid_at:new Date('2025-01-10T10:00:00Z'),rub_amount:150,bonus_amount:0,status:'completed',description:'Steam 150 ₽'},
-        {id:'own',user_id:created.user.id,paid_at:new Date('2026-11-20T10:00:00Z'),rub_amount:10,bonus_amount:0,status:'paid',description:null},
-        {id:'other',user_id:'other-user',paid_at:new Date(),rub_amount:999,bonus_amount:0,status:'paid',description:null}
+        {id:'older',user_id:created.user.id,paid_at:new Date('2025-01-10T10:00:00Z'),rub_amount:150,bonus_amount:0,status:'completed',description:'Steam · 150 ₽',items:[{platform:'Steam',productName:'',region:'Россия · RUB',login:'demo_steam',currency:'RUB',amount:150}]},
+        {id:'own',user_id:created.user.id,paid_at:new Date('2026-11-20T10:00:00Z'),rub_amount:10,bonus_amount:0,status:'paid',description:null,items:null},
+        {id:'other',user_id:'other-user',paid_at:new Date(),rub_amount:999,bonus_amount:0,status:'paid',description:null,items:null}
       );
       const orderResponse=await fetch(base+'/api/orders?limit=1&offset=0',{headers:{cookie}});
       const page1=await orderResponse.json();
@@ -85,6 +85,7 @@ async function scenario(pool) {
       assert.equal(page1.has_more,true);
       const page2=await (await fetch(base+'/api/orders?limit=1&offset=1',{headers:{cookie}})).json();
       assert.deepEqual(page2.orders.map(o=>o.id),['older']);
+      assert.equal(page2.orders[0].items[0].login,'demo_steam');
       assert.equal(page2.has_more,false);
       const meWithOrders=await (await fetch(base+'/api/auth/me',{headers:{cookie}})).json();
       assert.equal(meWithOrders.user.orders_count,2);
