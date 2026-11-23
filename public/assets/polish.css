@@ -69,3 +69,21 @@ html[data-theme="dark"] .auth-account-stats{background:#251b28;border-color:#5d4
 .auth-orders-link{margin-left:auto;color:#d52a78;font-size:12px;font-weight:800;white-space:nowrap}
 .auth-orders-link:hover{text-decoration:underline}
 html[data-theme="dark"] .auth-orders-link{color:#ff74b2}
+
+/* Styled cart rows and remove buttons across homepage and secondary pages. */
+.cart-row{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:14px;align-items:center;border-bottom:1px solid var(--line,#e7ccdc);padding:14px 0}
+.cart-row strong{grid-column:1;grid-row:1;min-width:0;overflow-wrap:anywhere;line-height:1.4}
+.cart-row p{grid-column:1;grid-row:2;margin:5px 0 0;color:var(--muted,#957f93);font-size:13px;line-height:1.45}
+.cart-row p:empty{display:none}
+.cart-row button{grid-column:2;grid-row:1 / span 2;float:none;align-self:center}
+.catalog-cart-row{align-items:center}
+.cart-row button,.catalog-cart-row button{flex:none;appearance:none;border:1px solid #e7bed4;border-radius:999px;background:#fce8f2;color:#b92b6d;padding:7px 14px;font:800 12px/1.2 Manrope,Arial,sans-serif;cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .15s}
+.cart-row button:hover,.catalog-cart-row button:hover{background:#f7d2e5;border-color:#e32f81;color:#9c1957;transform:translateY(-1px)}
+.cart-row button:active,.catalog-cart-row button:active{transform:translateY(0)}
+.cart-row button:focus-visible,.catalog-cart-row button:focus-visible{outline:3px solid #e32f81;outline-offset:2px}
+html[data-theme="dark"] .cart-row button,html[data-theme="dark"] .catalog-cart-row button{background:#322032;border-color:#6b4560;color:#f7a7cf}
+html[data-theme="dark"] .cart-row button:hover,html[data-theme="dark"] .catalog-cart-row button:hover{background:#4a2944;border-color:#ff74b2;color:#ffe0ef}
+.extra-dialog #promo-form button{border:1px solid #e7bed4;border-radius:10px;padding:10px 14px;background:#fce8f2;color:#8e2a5b;font-weight:800;transition:background .15s,border-color .15s}
+.extra-dialog #promo-form button:hover{background:#f7d2e5;border-color:#e32f81}
+html[data-theme="dark"] .extra-dialog #promo-form button{background:#322032;border-color:#6b4560;color:#f8eaf3}
+html[data-theme="dark"] .extra-dialog #promo-form button:hover{background:#4a2944;border-color:#ff74b2}
